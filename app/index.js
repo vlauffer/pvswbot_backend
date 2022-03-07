@@ -35,7 +35,7 @@ const app = express();
 // app.use(cors({origin: origins}));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-const port = 3000;
+const port = process.env.NODE_ENV==="production"? process.env.PORT: 3000;
 
 
 
@@ -47,15 +47,13 @@ app.use('/insertmessages', insertMessagesRouter);
 app.get('/', (req, res) => {
   console.log(req.headers)
   
-  res.send(TOKEN)
+  res.send("Yeet ur here")
 });
+// app.listen(port, () => {
+//   console.log(`Example app listening on port ${port}!`)
+// });
 
-
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}!`)
-});
-
+app.listen(process.env.PORT||port, ()=>console.log(`listening ${port}`));
 
 
 
