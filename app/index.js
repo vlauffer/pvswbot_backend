@@ -1,4 +1,3 @@
-// import 'dotenv/config';
 require('dotenv').config();
 const channelRouter = require('./api/channel');
 const guildRouter = require('./api/guild');
