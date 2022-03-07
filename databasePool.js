@@ -9,7 +9,7 @@ var mypool;
 if(process.env.NODE_ENV==="production"){
     mypool = new Client({
         connectionString: process.env.DATABASE_URL,
-        ssl: true
+        ssl: {rejectUnauthorized: false}
     });
 
     mypool.connect().then(console.log("db connected")).catch(error=>console.error(error));
