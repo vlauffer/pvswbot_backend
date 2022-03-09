@@ -5,6 +5,8 @@ const { response } = require('express');
 
 class MessageManager{
     static insertMessages(messages){
+        if(messages.length<1)  return Promise.resolve(true);
+
         var query = format("INSERT INTO messages (user_id, channel_id, message_id,  message_content) VALUES %L ON CONFLICT (message_id) DO UPDATE SET message_id=EXCLUDED.message_id RETURNING message_id;", messages)
         console.log(query)
         return new Promise((resolve, reject)=>{
