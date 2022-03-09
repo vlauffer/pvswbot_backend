@@ -40,47 +40,57 @@ router.post('/', (req, res)=> {
 
             ]
         );
-        var emojis= message.content.match(/[\p{Emoji}\u200d]+/gu)
-        if (emojis!=null ){
-            emojis.forEach(emoji => {
-                emojiArray.push(
-                    [
-                        message.channel_id,
-                        message.message_id,
-                        message.user_id,
-                        emoji
-                    ]
-                )
-            });
-        }
-        
-        
-        //if sql unique 
-        if(!userMap.has(message.user_id)){
-            // console.log('adding '+ message.username);
-            userMap.set(message.user_id, true);
-            userArray.push(
-                [
-                    message.user_id,
-                    message.username,
-                ]
-            )
-        }
     });
 
     MessageManager.insertMessages(messageArray)
-        .then(
-            // UserManager
-        )
-        .catch(error=>console.error(error));
+        .then(({duplicates})=>{
+            var duplicatesMap = new Map()
+            duplicates.forEach(duplicate => {
+                duplicatesMap.set(duplicate.message_id,true)
+            });
 
-    UserManager.insertUsers(userArray)
-        .then()
-        .catch(error=>console.error(error));
+            halp();
 
-    EmojiManager.insertEmojis(emojiArray)
-            .then()
-            .catch(error=>console.error(error));
+            req.body.messages.forEach(message => {
+                if(duplicatesMap.has(message.message_id)) return;
+
+                var emojis= message.content.match(/[\p{Emoji}\u200d]+/gu)
+                if (emojis!=null ){
+                    emojis.forEach(emoji => {
+                        emojiArray.push(
+                            [
+                                message.channel_id,
+                                message.message_id,
+                                message.user_id,
+                                emoji
+                            ]
+                        )
+                    });
+                }
+
+                if(!userMap.has(message.user_id)){
+                    // console.log('adding '+ message.username);
+                    userMap.set(message.user_id, true);
+                    userArray.push(
+                        [
+                            message.user_id,
+                            message.username,
+                        ]
+                    )
+                }
+            });
+
+            UserManager.insertUsers(userArray)
+                .then()
+                .catch(error=>console.error(error));
+
+            // EmojiManager.insertEmojis(emojiArray)
+            //         .then()
+            //         .catch(error=>console.error(error));
+        
+        }).catch(error=>console.error(error));
+
+    
 
     res.send("insterting")
 
@@ -114,5 +124,13 @@ router.post('/', (req, res)=> {
 //     })
     
 });
+
+// function halp(){
+//     console.log("halp")
+// }
+
+const halp = () =>{
+    console.log("halp")
+}
 
 module.exports= router;

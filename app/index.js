@@ -2,6 +2,7 @@ require('dotenv').config();
 const channelRouter = require('./api/channel');
 const guildRouter = require('./api/guild');
 const insertMessagesRouter = require('./api/messages');
+const getEmojisRouter = require('./api/emojis');
 
 
 const axios = require('axios').default;
@@ -42,6 +43,7 @@ const port = process.env.NODE_ENV==="production"? process.env.PORT: 3000;
 
 // app.use('/guildchannels', guildRouter);
 app.use('/insertmessages', insertMessagesRouter);
+app.use('/getemojis', getEmojisRouter);
 
 
 app.get('/', (req, res) => {

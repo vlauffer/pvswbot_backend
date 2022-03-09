@@ -6,7 +6,7 @@ const { response } = require('express');
 class UserManager{
     static insertUsers(users){
 
-
+        if(users.length<1)  return Promise.resolve(true);
         var query = format("INSERT INTO discord_users (user_id, username) VALUES %L ON CONFLICT DO NOTHING;", users)
         console.log(query)
         return new Promise((resolve, reject)=>{
