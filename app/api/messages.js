@@ -51,13 +51,13 @@ router.post('/', (req, res)=> {
         .then(({duplicates})=>{
             var duplicatesMap = new Map()
             duplicates.forEach(duplicate => {
-                duplicatesMap.set(duplicate.message_id,true)
+                duplicatesMap.set(duplicate.message_id,duplicate.source)
             });
-
-            halp();
+            // console.log(duplicatesMap)
+            // halp();
 
             req.body.messages.forEach(message => {
-                if(duplicatesMap.has(message.message_id)) return;
+                if(duplicatesMap.get(message.message_id)=='s') return;
 
                 var emojis= message.content.match(/[\p{Emoji}\u200d]+/gu)
                 if (emojis!=null ){
@@ -89,9 +89,9 @@ router.post('/', (req, res)=> {
                 .then()
                 .catch(error=>console.error(error));
 
-            // EmojiManager.insertEmojis(emojiArray)
-            //         .then()
-            //         .catch(error=>console.error(error));
+            EmojiManager.insertEmojis(emojiArray)
+                    .then()
+                    .catch(error=>console.error(error));
         
         }).catch(error=>console.error(error));
 
@@ -134,8 +134,8 @@ router.post('/', (req, res)=> {
 //     console.log("halp")
 // }
 
-const halp = () =>{
-    console.log("halp")
-}
+// const halp = () =>{
+//     console.log("halp")
+// }
 
 module.exports= router;

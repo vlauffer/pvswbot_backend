@@ -21,6 +21,31 @@ class EmojiManager{
 
     static getEmojis(){
         var query = format("SELECT emoji, COUNT(*) FROM emojis GROUP BY emoji;")
+        console.log(query)
+
+        return new Promise((resolve, reject)=>{
+            pool.query(
+                query,
+                (error,response)=>{
+                    if (error) return reject(error);
+                    var emojiCounts = response.rows;
+                    resolve({emojiCounts})
+                }
+            )
+        });
+    }
+
+    static getUserEmojis(username){
+        // var query = format(`WITH v1 AS (
+        //     SELECT user_id FROM discord_users WHERE username=%L)
+        // SELECT emoji, COUNT(*) FROM emojis WHERE user_id=v1.user_id GROUP BY emoji;`,username)
+
+        var query = format(`
+            SELECT emoji, COUNT(*) FROM emojis INNER JOIN discord_users USING (user_id) GROUP BY emoji
+        `,username);
+
+        console.log(query)
+
         return new Promise((resolve, reject)=>{
             pool.query(
                 query,

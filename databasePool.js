@@ -15,8 +15,8 @@ if(process.env.NODE_ENV==="production"){
     mypool.connect().then(console.log("db connected")).catch(error=>console.error(error));
 
 }else{
-    // const databaseConfiguration = require('./secrets/dbConfig');
-    // mypool = new Pool(databaseConfiguration);
+    const databaseConfiguration = require('./secrets/dbConfig');
+    mypool = new Pool(databaseConfiguration);
 }
 
 module.exports = mypool;
