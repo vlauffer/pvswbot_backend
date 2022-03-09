@@ -25,10 +25,15 @@ const router = new Router();
 
 router.post('/', (req, res)=> {
 
+    if (req.body.messages<1) {
+        res.send("no messages")
+        return;
+    }
     var messageArray = [];
     var userArray = [];
     var emojiArray = [];
     var userMap = new Map();
+
     req.body.messages.forEach(message => {
         messageArray.push(
             [
