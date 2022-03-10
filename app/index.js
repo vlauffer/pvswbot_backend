@@ -46,7 +46,7 @@ const port = process.env.NODE_ENV==="production"? process.env.PORT: 3000;
 // app.use('/guildchannels', guildRouter);
 app.use('/insertmessages', insertMessagesRouter);
 app.use('/getemojis', getEmojisRouter);
-app.use('/getuseremojis', getUserEmojisRouter);
+app.use('/getallusersemojis', getUserEmojisRouter);
 
 
 app.get('/', (req, res) => {

@@ -3,6 +3,9 @@ const MessageManager = require('../messages/MessageManager');
 const UserManager = require('../discord_users/UserManager');
 const EmojiManager = require('../emojis/EmojiManager');
 const { user } = require('pg/lib/defaults');
+const Graphemer = require('graphemer').default;
+const splitter = new Graphemer();
+// const graphemes = splitter.splitGraphemes(string);
 // const axios = require('axios').default;
 // const TOKEN = process.env.TOKEN; 
 
@@ -58,18 +61,26 @@ router.post('/', (req, res)=> {
 
             req.body.messages.forEach(message => {
                 if(duplicatesMap.get(message.message_id)=='s') return;
+                // var messageContentSpacer = message.content.replaceAll("", " ");
 
-                var emojis= message.content.match(/[\p{Emoji}\u200d]+/gu)
+                // var emojis= message.content.match(/[\p{Emoji}\u200d]+/gu);
+                
+                // emojis = emojis.split("");
+
+                var emojis = splitter.splitGraphemes(message.content);
+
                 if (emojis!=null ){
                     emojis.forEach(emoji => {
-                        emojiArray.push(
-                            [
-                                message.channel_id,
-                                message.message_id,
-                                message.user_id,
-                                emoji
-                            ]
-                        )
+                        if(/\p{Extended_Pictographic}/u.test(emoji)){
+                            emojiArray.push(
+                                [
+                                    message.channel_id,
+                                    message.message_id,
+                                    message.user_id,
+                                    emoji
+                                ]
+                            )
+                        }
                     });
                 }
 

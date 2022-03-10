@@ -35,14 +35,24 @@ class EmojiManager{
         });
     }
 
-    static getUserEmojis(username){
+    static getAllUsersEmojis(){
         // var query = format(`WITH v1 AS (
         //     SELECT user_id FROM discord_users WHERE username=%L)
         // SELECT emoji, COUNT(*) FROM emojis WHERE user_id=v1.user_id GROUP BY emoji;`,username)
 
-        var query = format(`
-            SELECT emoji, COUNT(*) FROM emojis INNER JOIN discord_users USING (user_id) GROUP BY emoji
-        `,username);
+        var query = `
+            SELECT  discord_users.username, emojis.emoji, COUNT(emojis.emoji) FROM emojis 
+            INNER JOIN discord_users ON emojis.user_id=discord_users.user_id 
+            GROUP BY discord_users.username, emojis.emoji
+            
+            
+        ;`;
+
+        // var query = format(`
+        //     SELECT user_id, emoji FROM emojis
+            
+            
+        // ;`,username);
 
         console.log(query)
 

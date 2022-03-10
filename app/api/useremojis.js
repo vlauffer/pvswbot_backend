@@ -9,10 +9,10 @@ const router = new Router();
 router.get('/',(req,res)=>{
 
 
-    EmojiManager.getUserEmojis(req.body.username)
+    EmojiManager.getAllUsersEmojis()
 
         .then(({emojiCounts})=>res.send({
-            "Total": emojiCounts
+            "Totals": emojiCounts
         }))
         .catch(error=>console.error(error));
 
