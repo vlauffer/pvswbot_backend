@@ -4,6 +4,8 @@ const { response } = require('express');
 
 
 class UserManager{
+
+    //takes an array of arrays, where each index contains user information (user_id and username) and inserts each into into the db
     static insertUsers(users){
 
         if(users.length<1)  return Promise.resolve(true);

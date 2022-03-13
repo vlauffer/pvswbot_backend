@@ -4,6 +4,9 @@ const { response } = require('express');
 
 
 class EmojiManager{
+
+    //emojis is an array of arrays, where each index is an array of emoji data (channel_id, message_id,  user_id, emoji)
+    //returns true if insertion is successful
     static insertEmojis(emojis){
         if(emojis.length<1) return Promise.resolve(true);
         var query = format("INSERT INTO emojis (channel_id, message_id,  user_id, emoji) VALUES %L;", emojis)
@@ -19,6 +22,7 @@ class EmojiManager{
         });
     }
 
+    //returns total counts for each emoji in the db
     static getEmojis(){
         var query = format("SELECT emoji, COUNT(*) FROM emojis GROUP BY emoji;")
         console.log(query)
@@ -35,24 +39,15 @@ class EmojiManager{
         });
     }
 
+
+    //returns an array that lists the amount of reccurance of a given emoji for each user in the db
     static getAllUsersEmojis(){
-        // var query = format(`WITH v1 AS (
-        //     SELECT user_id FROM discord_users WHERE username=%L)
-        // SELECT emoji, COUNT(*) FROM emojis WHERE user_id=v1.user_id GROUP BY emoji;`,username)
 
         var query = `
             SELECT  discord_users.username, emojis.emoji, COUNT(emojis.emoji) FROM emojis 
             INNER JOIN discord_users ON emojis.user_id=discord_users.user_id 
             GROUP BY discord_users.username, emojis.emoji
-            
-            
         ;`;
-
-        // var query = format(`
-        //     SELECT user_id, emoji FROM emojis
-            
-            
-        // ;`,username);
 
         console.log(query)
 

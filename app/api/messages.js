@@ -2,73 +2,40 @@ const {Router} = require('express');
 const MessageManager = require('../messages/MessageManager');
 const UserManager = require('../discord_users/UserManager');
 const EmojiManager = require('../emojis/EmojiManager');
-const { user } = require('pg/lib/defaults');
 const Graphemer = require('graphemer').default;
 const splitter = new Graphemer();
-// const graphemes = splitter.splitGraphemes(string);
-// const axios = require('axios').default;
-// const TOKEN = process.env.TOKEN; 
-
-// const GUILD_ID = '905487315982495765'
-// const GUILD_URL = `guilds/${GUILD_ID}/channels`
-
-// const DISCORD_BASEURL = "https://discord.com/api/v9/";
-// const headers = {
-//   "Authorization": TOKEN,
-
-// }
 
 const router = new Router();
 
-// const regex = /\p{Extended_Pictographic}/ug
-// const family = '👨‍👩‍👧' // "family 
-// console.log(family.length) // not 1, but 8!
-// console.log(regex.test(family)) // true, as expected
-// console.log(family.match(regex)) // not [family], but [man, woman, girl]
 
 router.post('/', (req, res)=> {
-
+    // if there are no messages in the request, send "no messages" and return empty
     if (req.body.messages<1) {
         res.send("no messages")
         return;
     }
-    var messageArray = [];
+
+    var messageArray = populateMessageArray(req.body.messages);
     var userArray = [];
     var emojiArray = [];
     var userMap = new Map();
 
-    req.body.messages.forEach(message => {
-        messageArray.push(
-            [
-                // message.username,
-                message.user_id,
-                message.channel_id,
-                message.message_id,
-                message.content
-
-            ]
-        );
-    });
-
+    //insert all of our messages, and if there are any duplicates, do not add their corresponding user and emoji data into the db
     MessageManager.insertMessages(messageArray)
         .then(({duplicates})=>{
             var duplicatesMap = new Map()
             duplicates.forEach(duplicate => {
                 duplicatesMap.set(duplicate.message_id,duplicate.source)
             });
-            // console.log(duplicatesMap)
-            // halp();
 
             req.body.messages.forEach(message => {
+                // if message is a duplicate, move on to the next message
                 if(duplicatesMap.get(message.message_id)=='s') return;
-                // var messageContentSpacer = message.content.replaceAll("", " ");
 
-                // var emojis= message.content.match(/[\p{Emoji}\u200d]+/gu);
-                
-                // emojis = emojis.split("");
-
+                //splits message content into characters, where each character can also be an emoji (takes into account compound emojis)
                 var emojis = splitter.splitGraphemes(message.content);
-
+                
+                //if character is emoji, then add it to the emojiArray
                 if (emojis!=null ){
                     emojis.forEach(emoji => {
                         if(/\p{Extended_Pictographic}/u.test(emoji)){
@@ -84,8 +51,8 @@ router.post('/', (req, res)=> {
                     });
                 }
 
+                // if the user has already been added to the userMap, do not add them again
                 if(!userMap.has(message.user_id)){
-                    // console.log('adding '+ message.username);
                     userMap.set(message.user_id, true);
                     userArray.push(
                         [
@@ -96,6 +63,8 @@ router.post('/', (req, res)=> {
                 }
             });
 
+            //insert the users and emojis into their corresponding tables
+            
             UserManager.insertUsers(userArray)
                 .then()
                 .catch(error=>console.error(error));
@@ -108,45 +77,29 @@ router.post('/', (req, res)=> {
 
     
 
-    res.send("insterting")
+    res.send("Inserting messages")
 
-    // const resy = await axios.get(DISCORD_BASEURL+CHANNEL_URL,
-    //     {
-    //     headers: headers
-    //     });
-    // console.log(resy)
-
-//   axios.get(
-//     DISCORD_BASEURL+GUILD_URL,
-//     {
-//       headers:headers
-//     })
-//     .then(res=>
-//     {
-//       res.data.forEach(element => {
-
-//         var channelsToSearch = [];
-//         if(element.hasOwnProperty('last_message_id')){
-//           if(element.last_message_id!=null){
-//             console.log("found text channel: " + element.name);
-//             channelsToSearch.push(element.id);
-//           }
-//         }
-//       });
-//       // console.log(res);
-//     })
-//     .catch(error=>{
-//       console.error(error)
-//     })
     
 });
 
-// function halp(){
-//     console.log("halp")
-// }
+//for each message, populate an array of user_id, channel_id, message_id, and message content, and append this array to the arrayPlaceholder.
+//returns fully populated array of messages
+function populateMessageArray(messages){
+    var arrayPlaceholder =[];
+    messages.forEach(message => {
+        arrayPlaceholder.push(
+            [
 
-// const halp = () =>{
-//     console.log("halp")
-// }
+                message.user_id,
+                message.channel_id,
+                message.message_id,
+                message.content
+
+            ]
+        );
+    });
+    return arrayPlaceholder;
+}
+
 
 module.exports= router;
