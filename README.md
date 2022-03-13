@@ -24,6 +24,6 @@ Inserts messages into the database, requires a raw json object in the following 
 ```
 
 ## What am I currently working on?
-• Creating an additional table in the database that stores base64 encoded emojis and their corresponding title
-• Adding a column on the messages table that will label when each message was sent
+- Creating an additional table in the database that stores base64 encoded emojis and their corresponding title
+- Adding a column on the messages table that will label when each message was sent
 
