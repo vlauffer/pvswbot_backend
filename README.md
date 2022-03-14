@@ -26,5 +26,7 @@ Inserts messages into the database, requires a raw json object in the following 
 ## What am I currently working on?
 - Creating an additional table in the database that stores base64 encoded emojis and their corresponding title
 - Adding a column on the messages table that will label when each message was sent
-- Create table and api request for tracking reactions
+- Create table and api request for adding reactions
+- Adding functionality for editing messages and updating all tables based off edits/deletions
+- Adding functionality for discarding reactions
 
