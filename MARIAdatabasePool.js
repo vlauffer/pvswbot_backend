@@ -3,13 +3,16 @@ const mariadb = require('mariadb');
 var pool = null;
 
 if(process.env.NODE_ENV==="production"){
-    mariadb.createConnection({
-        host: 'pvswbotdb-instance.ce6gmhlvdbti.us-east-1.rds.amazonaws.com', 
-        user:'admin',
-        password: 'Ilovemaria09=',
+    pool = mariadb.createPool({
+        host: process.env.AWS_URL, 
+        user: process.env.AWS_USER,
+        password: process.env.AWS_PASS,
+        database: process.env.AWS_DB,
         charset: 'utf8mb4',
         multipleStatements: true
-    })
+    });
+
+    pool.getConnection()
     .then(conn => {
         console.log("connected ! connection id is " + conn.threadId);
     })

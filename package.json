@@ -9,7 +9,8 @@
     "dev": "nodemon ./app/index.js",
     "configure": "./bin/configure_db.sh",
     "maria": "./bin/configure_maria_db.sh",
-    "config-mysql": "./bin/configure_mysql.sh"
+    "config-mysql": "./bin/configure_mysql.sh",
+    "seedAWS": "./bin/configure_AWS_maria.sh"
   },
   "author": "vlauffer",
   "license": "ISC",

@@ -1,6 +1,12 @@
+var fs = require('fs');
 
 
 const pool = require('../../MARIAdatabasePool');
+const sqlFolder = require('../bin/maria/')
 
-// pool.query()
+const discord_users = require('../bin/maria/discord_users.sql');
+var discord_users = fs.readFileSync('../bin/maria/discord_users.sql').toString();
+
+
+
 
