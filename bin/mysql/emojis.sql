@@ -3,4 +3,4 @@ CREATE TABLE emojis (
     message_id VARCHAR(64),
     emoji TEXT
 
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;

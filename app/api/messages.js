@@ -20,17 +20,17 @@ router.post('/', (req, res)=> {
     var emojiArray = [];
     var userMap = new Map();
 
-    //insert all of our messages, and if there are any duplicates, do not add their corresponding user and emoji data into the db
+    //insert all of our messages, and if there are any newMessages, do not add their corresponding user and emoji data into the db
     MessageManager.insertMessages(messageArray)
-        .then(({duplicates})=>{
-            var duplicatesMap = new Map()
-            duplicates.forEach(duplicate => {
-                duplicatesMap.set(duplicate.message_id,duplicate.source)
+        .then(({newMessages})=>{
+            var newMessagesMap = new Map()
+            newMessages.forEach(duplicate => {
+                newMessagesMap.set(duplicate.message_id,true)
             });
 
             req.body.messages.forEach(message => {
                 // if message is a duplicate, move on to the next message
-                if(duplicatesMap.get(message.message_id)=='s') return;
+                if(!newMessagesMap.has(message.message_id)) return;
 
                 //splits message content into characters, where each character can also be an emoji (takes into account compound emojis)
                 var emojis = splitter.splitGraphemes(message.content);
@@ -41,9 +41,7 @@ router.post('/', (req, res)=> {
                         if(/\p{Extended_Pictographic}/u.test(emoji)){
                             emojiArray.push(
                                 [
-                                    message.channel_id,
                                     message.message_id,
-                                    message.user_id,
                                     emoji
                                 ]
                             )
@@ -64,7 +62,7 @@ router.post('/', (req, res)=> {
             });
 
             //insert the users and emojis into their corresponding tables
-            
+
             UserManager.insertUsers(userArray)
                 .then()
                 .catch(error=>console.error(error));
@@ -74,9 +72,6 @@ router.post('/', (req, res)=> {
                     .catch(error=>console.error(error));
         
         }).catch(error=>console.error(error));
-
-    
-
     res.send("Inserting messages")
 
     
@@ -89,12 +84,11 @@ function populateMessageArray(messages){
     messages.forEach(message => {
         arrayPlaceholder.push(
             [
-
                 message.user_id,
                 message.channel_id,
                 message.message_id,
-                message.content
-
+                message.content,
+                // message.created_at
             ]
         );
     });

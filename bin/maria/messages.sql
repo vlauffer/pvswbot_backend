@@ -5,5 +5,4 @@ CREATE TABLE messages (
     user_id VARCHAR(64),
     message_content TEXT
 
-
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;

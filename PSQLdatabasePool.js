@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 
 const {Pool} = require ('pg');
@@ -15,6 +16,7 @@ if(process.env.NODE_ENV==="production"){
 }else{
     const databaseConfiguration = require('./secrets/dbConfig');
     mypool = new Pool(databaseConfiguration);
+    
 }
 
 module.exports = mypool;

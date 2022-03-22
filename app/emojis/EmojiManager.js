@@ -1,4 +1,5 @@
-const pool = require('../../databasePool.js');
+// const pool = require('../../PSQLdatabasePool.js');
+const pool = require('../../MARIAdatabasePool');
 const format = require('pg-format');
 const { response } = require('express');
 
@@ -9,16 +10,25 @@ class EmojiManager{
     //returns true if insertion is successful
     static insertEmojis(emojis){
         if(emojis.length<1) return Promise.resolve(true);
-        var query = format("INSERT INTO emojis (channel_id, message_id,  user_id, emoji) VALUES %L;", emojis)
+        var query = format("INSERT INTO emojis (message_id, emoji) VALUES %L;", emojis)
         console.log(query)
         return new Promise((resolve, reject)=>{
-            pool.query(
-                query,
-                (error,response)=>{
-                    if (error) return reject(error);
-                    resolve(true)
-                }
-            )
+
+            pool.query(query).then(rows=>{
+                resolve(true)
+                // conn.end();
+
+            }).catch(err=> {
+                return reject(err)
+            });
+
+            // pool.query(
+            //     query,
+            //     (error,response)=>{
+            //         if (error) return reject(error);
+            //         resolve(true)
+            //     }
+            // )
         });
     }
 
@@ -28,14 +38,25 @@ class EmojiManager{
         console.log(query)
 
         return new Promise((resolve, reject)=>{
-            pool.query(
-                query,
-                (error,response)=>{
-                    if (error) return reject(error);
-                    var emojiCounts = response.rows;
-                    resolve({emojiCounts})
-                }
-            )
+
+            pool.query(query).then(rows=>{
+                var emojiCounts = rows;
+                resolve({emojiCounts})
+                // conn.end();
+
+
+            }).catch(err=> {
+                return reject(err)
+            });
+
+            // pool.query(
+            //     query,
+            //     (error,response)=>{
+            //         if (error) return reject(error);
+            //         var emojiCounts = response.rows;
+            //         resolve({emojiCounts})
+            //     }
+            // )
         });
     }
 

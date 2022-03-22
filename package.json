@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV='production' node ./app/index.js",
     "dev": "nodemon ./app/index.js",
-    "configure": "./bin/configure_db.sh"
+    "configure": "./bin/configure_db.sh",
+    "maria": "./bin/configure_maria_db.sh",
+    "config-mysql": "./bin/configure_mysql.sh"
   },
   "author": "vlauffer",
   "license": "ISC",
@@ -25,6 +27,8 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "graphemer": "^1.3.0",
+    "mariadb": "^3.0.0",
+    "mysql": "^2.18.1",
     "pg": "^8.7.3",
     "pg-format": "^1.0.4"
   }
