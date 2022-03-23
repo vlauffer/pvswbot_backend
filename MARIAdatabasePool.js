@@ -31,7 +31,7 @@ if(process.env.NODE_ENV==="production"){
         multipleStatements: true
 
     });
-    pool.getConnection().then(console.log("db connected")).catch(error=>console.error(error));
+    pool.getConnection().then(console.log("local db connected")).catch(error=>console.error(error));
     
     // pooly.getConnection().then().catch(err=> console.error(err));
 }

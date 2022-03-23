@@ -11,7 +11,7 @@ if(process.env.NODE_ENV==="production"){
         ssl: {rejectUnauthorized: false}
     });
 
-    mypool.connect().then(console.log("db connected")).catch(error=>console.error(error));
+    mypool.connect().then(console.log("PSQL db connected")).catch(error=>console.error(error));
 
 }else{
     const databaseConfiguration = require('./secrets/dbConfig');
