@@ -3,7 +3,6 @@
 const pool = require('../../MARIAdatabasePool')
 const format = require('pg-format');
 const { response } = require('express');
-const databaseConfiguration = require('../../secrets/newdbConfig')
 
 
 
