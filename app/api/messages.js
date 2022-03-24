@@ -26,12 +26,12 @@ router.post('/', (req, res)=> {
     var emojiQuery = format(`
     INSERT INTO emojis(message_id, emoji) SELECT message_id, emoji FROM 
         (SELECT message_id, emoji FROM emojis WHERE internal_emojis_id='0' 
-        UNION VALUES %L ) sub1 
+        UNION ALL VALUES %L ) sub1 
         WHERE message_id NOT IN (SELECT message_id FROM messages);
      `, emojiArray);
 
     var messageQuery = format(`
-    INSERT IGNORE INTO messages(user_id, channel_id, message_id, message_content) VALUES %L
+    INSERT IGNORE INTO messages(user_id, channel_id, message_id, message_content, created_at) VALUES %L
         RETURNING message_id;
      `, messageArray);
     var userQuery = format(` 
@@ -53,60 +53,6 @@ router.post('/', (req, res)=> {
 
     var userMap = new Map();
 
-    // //insert all of our messages, and if there are any newMessages, do not add their corresponding user and emoji data into the db
-    // MessageManager.insertMessages(messageArray)
-    //     .then(({newMessages})=>{
-    //         var newMessagesMap = new Map()
-    //         newMessages.forEach(duplicate => {
-    //             newMessagesMap.set(duplicate.message_id,true)
-    //         });
-
-    //         req.body.messages.forEach(message => {
-    //             // if message is a duplicate, move on to the next message
-    //             if(!newMessagesMap.has(message.message_id)) return;
-
-    //             //splits message content into characters, where each character can also be an emoji (takes into account compound emojis)
-    //             var emojis = splitter.splitGraphemes(message.content);
-                
-    //             //if character is emoji, then add it to the emojiArray
-    //             if (emojis!=null ){
-    //                 emojis.forEach(emoji => {
-    //                     if(/\p{Extended_Pictographic}/u.test(emoji)){
-    //                         emojiArray.push(
-    //                             [
-    //                                 message.message_id,
-    //                                 emoji
-    //                             ]
-    //                         )
-    //                     }
-    //                 });
-    //             }
-
-    //             // if the user has already been added to the userMap, do not add them again
-    //             if(!userMap.has(message.user_id)){
-    //                 userMap.set(message.user_id, true);
-    //                 userArray.push(
-    //                     [
-    //                         message.user_id,
-    //                         message.username,
-    //                     ]
-    //                 )
-    //             }
-    //         });
-
-    //         //insert the users and emojis into their corresponding tables
-
-    //         UserManager.insertUsers(userArray)
-    //             .then()
-    //             .catch(error=>console.error(error));
-
-    //         EmojiManager.insertEmojis(emojiArray)
-    //                 .then()
-    //                 .catch(error=>console.error(error));
-        
-    //     }).catch(error=>console.error(error));
-    // res.send("Inserting messages")
-
     
 });
 
@@ -121,7 +67,7 @@ function populateMessageArray(messages){
                 message.channel_id,
                 message.message_id,
                 message.content,
-                // message.created_at
+                message.created_at
             ]
         );
     });

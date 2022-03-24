@@ -5,6 +5,7 @@ require('dotenv').config();
 const insertMessagesRouter = require('./api/messages');
 const getEmojisRouter = require('./api/emojis');
 const getUserEmojisRouter = require('./api/useremojis');
+const getDatesRouter = require('./api/dates');
 
 //set up express server
 const express = require('express');
@@ -18,6 +19,7 @@ const port = process.env.NODE_ENV==="production"? process.env.PORT: 3000;
 app.use('/insertmessages', insertMessagesRouter);
 app.use('/getemojis', getEmojisRouter);
 app.use('/getallusersemojis', getUserEmojisRouter);
+app.use('/getemojidates', getDatesRouter);
 
 app.get('/', (req, res) => {
   res.send("base request hit")
