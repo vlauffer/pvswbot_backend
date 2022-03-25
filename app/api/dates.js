@@ -18,7 +18,7 @@ router.get('/',(req,res)=>{
 
 
     var finalQuery =format(`
-    SELECT emoji, CAST(COUNT(emoji) AS VARCHAR(64)), created_at FROM (SELECT emojis.emoji, messages.created_at 
+    SELECT emoji, CAST(COUNT(emoji) AS VARCHAR(64)) AS count, created_at FROM (SELECT emojis.emoji, messages.created_at 
         FROM emojis INNER JOIN messages on emojis.message_id=messages.message_id 
         WHERE created_at BETWEEN %L AND %L) sub1 GROUP BY emoji, DAY(created_at);
 
