@@ -6,22 +6,66 @@ const Graphemer = require('graphemer').default;
 const splitter = new Graphemer();
 const pool = require('../../MARIAdatabasePool');
 const format = require('pg-format');
-
-
-
 const router = new Router();
 
+router.post('/add', (req, res)=> {
+    parseAndInsertMessages(req.body.messages).then(()=>{
+        // console.log("Successful insertion");
+        res.send("Successful insertion");
+    }).catch(err=>{
+        console.error(err)
+        res.send(err)
+    });
 
-router.post('/', (req, res)=> {
+    // pool.query(finalQuery).then(()=>{
+    //     console.log("Successful insertion");
+    //     res.send("Successful insertion");
+    // }).catch(err=>{
+    //     console.error(err)
+    //     res.send(err)
+    // });
+
+
+
+    
+});
+
+router.post('/edit', (req, res)=> {
+
+    var message = req.body.message;
+    deleteMessage(message)
+    .then(()=>{
+        parseAndInsertMessages([message]).then(()=>{
+            res.send("edit successful");
+        })
+        .catch(err=>{
+            console.error(err);
+            res.send(err);
+        });
+    })
+    .catch(err=>{
+        console.error(err);
+        res.send(err);
+    });
+
+});
+
+
+function parseAndInsertMessages(messages){
+
     // if there are no messages in the request, send "no messages" and return empty
-    if (req.body.messages<1) {
+    if (messages.length<1) {
         res.send("no messages")
-        return;
+        return Promise.resolve(true);
     }
 
-    var messageArray = populateMessageArray(req.body.messages);
-    var userArray = populateUserArray(req.body.messages);
-    var emojiArray = populateEmojiArray(req.body.messages);
+    var messageArray = populateMessageArray(messages);
+    var userArray = populateUserArray(messages);
+    var emojiArray = populateEmojiArray(messages);
+
+    if(emojiArray.length<1){
+        return Promise.resolve(true);
+    }
 
     var emojiQuery = format(`
     INSERT INTO emojis(message_id, emoji) SELECT message_id, emoji FROM 
@@ -43,18 +87,46 @@ router.post('/', (req, res)=> {
 
     console.log(finalQuery)
 
-    pool.query(finalQuery).then(()=>{
-        console.log("Successful insertion");
-        res.send("Successful insertion");
-    }).catch(err=>{
-        console.error(err)
-        res.send(err)
+
+    return new Promise((resolve, reject)=>{
+
+
+        pool.query(finalQuery).then(rows=>{
+            
+            resolve(true);
+            // conn.end();
+
+
+        }).catch(err=> {
+            return reject(err)
+        });
+
+        
     });
 
-    var userMap = new Map();
 
+}
+
+function deleteMessage(message){
+    var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message.message_id);
+    var removeEmojisQuery = format(`DELETE FROM emojis WHERE message_id=%L; `, message.message_id);
     
-});
+    var finalQuery = `BEGIN; ` + removeMessageQuery +removeEmojisQuery+  ` COMMIT;`
+
+    console.log(finalQuery)
+
+    return new Promise((resolve, reject)=>{
+        pool.query(finalQuery).then(()=>{
+            // parse
+            resolve(true)
+        })
+        .catch(err=>{
+            console.error(err);
+            return reject(err)
+        })
+    });
+    
+}
 
 //for each message, populate an array of user_id, channel_id, message_id, and message content, and append this array to the arrayPlaceholder.
 //returns fully populated array of messages

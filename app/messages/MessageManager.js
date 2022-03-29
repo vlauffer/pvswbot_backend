@@ -59,6 +59,10 @@ class MessageManager{
         
     }
 
+    static editMessage(message){
+        
+    }
+
     static getMessages(){
         
     }

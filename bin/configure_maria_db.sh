@@ -15,6 +15,7 @@ mysql -uadmin -p$pass -e "CREATE DATABASE $MAINDB CHARACTER SET utf8mb4 COLLATE 
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/discord_users.sql
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/messages.sql
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/emojis.sql
+mysql -uadmin -p$pass pvswbotdb < ./bin/maria/reactions.sql
 
 
 # dropdb -U admin pvswbotdb
