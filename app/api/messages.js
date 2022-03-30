@@ -33,7 +33,7 @@ router.post('/add', (req, res)=> {
 router.post('/edit', (req, res)=> {
 
     var message = req.body.message;
-    deleteMessage(message)
+    deleteMessage(message.message_id)
     .then(()=>{
         parseAndInsertMessages([message]).then(()=>{
             res.send("edit successful");
@@ -42,6 +42,20 @@ router.post('/edit', (req, res)=> {
             console.error(err);
             res.send(err);
         });
+    })
+    .catch(err=>{
+        console.error(err);
+        res.send(err);
+    });
+
+});
+
+router.post('/delete', (req, res)=> {
+
+    var message = req.body.message;
+    deleteMessage(message)
+    .then(()=>{
+        res.send("deletion of " + req.body.message+ " successful");
     })
     .catch(err=>{
         console.error(err);
@@ -107,9 +121,9 @@ function parseAndInsertMessages(messages){
 
 }
 
-function deleteMessage(message){
-    var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message.message_id);
-    var removeEmojisQuery = format(`DELETE FROM emojis WHERE message_id=%L; `, message.message_id);
+function deleteMessage(message_id){
+    var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message_id);
+    var removeEmojisQuery = format(`DELETE FROM emojis WHERE message_id=%L; `, message_id);
     
     var finalQuery = `BEGIN; ` + removeMessageQuery +removeEmojisQuery+  ` COMMIT;`
 

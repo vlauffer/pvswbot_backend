@@ -13,8 +13,13 @@ const router = new Router();
 
 router.get('/',(req,res)=>{
 
-    var date1 = req.body.date1;
-    var date2 = req.body.date2;
+    if (Object.keys(req.query).length===0){
+        res.send("Invalid request: no params found");
+        return;
+    }
+    var date1 = req.query.date1;
+    var date2 = req.query.date2;
+
 
 
     var finalQuery =format(`
