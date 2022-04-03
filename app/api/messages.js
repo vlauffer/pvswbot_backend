@@ -55,7 +55,14 @@ router.post('/delete', (req, res)=> {
     var message = req.body.message;
     deleteMessage(message)
     .then(()=>{
-        res.send("deletion of " + req.body.message+ " successful");
+        deleteReactions(message).then(()=>{
+            res.send("deletion of " + req.body.message+ " successful");
+        })
+        .catch(err=>{
+            console.error(err);
+            res.send(err);
+        });
+        
     })
     .catch(err=>{
         console.error(err);
@@ -121,11 +128,27 @@ function parseAndInsertMessages(messages){
 
 }
 
+function deleteReactions(message_id){
+    var removeReactionsQuery = format(`DELETE FROM reactions WHERE message_id=%L; `, message_id);
+    return new Promise((resolve, reject)=>{
+        pool.query(removeReactionsQuery).then(()=>{
+            // parse
+            resolve(true)
+        })
+        .catch(err=>{
+            console.error(err);
+            return reject(err)
+        })
+    });
+
+}
+
 function deleteMessage(message_id){
     var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message_id);
     var removeEmojisQuery = format(`DELETE FROM emojis WHERE message_id=%L; `, message_id);
     
-    var finalQuery = `BEGIN; ` + removeMessageQuery +removeEmojisQuery+  ` COMMIT;`
+    
+    var finalQuery = `BEGIN; ` + removeMessageQuery + removeEmojisQuery+  ` COMMIT;`
 
     console.log(finalQuery)
 

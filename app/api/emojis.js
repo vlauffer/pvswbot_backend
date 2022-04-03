@@ -5,7 +5,7 @@ const router = new Router();
 // gets total count of each emoji and returns json
 router.get('/',(req,res)=>{
 
-    EmojiManager.getEmojis()
+    EmojiManager.getMessageAndReactionEmojis()
         .then(({emojiCounts})=>res.send({
             "Total": emojiCounts
         }))
