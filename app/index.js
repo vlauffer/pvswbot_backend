@@ -7,6 +7,7 @@ const getEmojisRouter = require('./api/emojis');
 const getUserEmojisRouter = require('./api/useremojis');
 const getDatesRouter = require('./api/dates');
 const insertReactionRouter = require('./api/reactions');
+const emojiImagesRouter = require('./api/emoji_images');
 
 
 //set up express server
@@ -23,6 +24,7 @@ app.use('/getemojis', getEmojisRouter);
 app.use('/getallusersemojis', getUserEmojisRouter);
 app.use('/getemojidates', getDatesRouter);
 app.use('/reaction', insertReactionRouter);
+app.use('/emoji_images', emojiImagesRouter);
 
 app.get('/', (req, res) => {
   res.send("base request hit")
