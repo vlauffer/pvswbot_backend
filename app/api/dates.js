@@ -24,7 +24,7 @@ router.get('/',(req,res)=>{
 
     var finalQuery =`
     SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, created_at, 
-    LEFT(emoji_images.base, LENGTH(emoji_images.base ) -1) AS base 
+    LEFT(emoji_images.base, LENGTH(emoji_images.base )) AS base 
     FROM (SELECT emojis.emoji, emojis.ucode, messages.created_at as created_at 
         FROM emojis INNER JOIN messages on emojis.message_id=messages.message_id 
         WHERE created_at BETWEEN ? AND ? UNION ALL 
