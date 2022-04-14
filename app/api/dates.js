@@ -23,13 +23,13 @@ router.get('/',(req,res)=>{
 
 
     var finalQuery =`
-    SELECT emoji, CAST(COUNT(emoji) AS VARCHAR(64)) AS count, created_at 
-    FROM (SELECT emojis.emoji as emoji, messages.created_at as created_at 
+    SELECT emoji, ucode, CAST(COUNT(ucode) AS VARCHAR(64)) AS count, created_at 
+    FROM (SELECT emojis.emoji as emoji, emojis.ucode, messages.created_at as created_at 
         FROM emojis INNER JOIN messages on emojis.message_id=messages.message_id 
         WHERE created_at BETWEEN ? AND ? UNION ALL 
-        SELECT reactions.emoji as emoji, reactions.created_at as created_at 
+        SELECT reactions.emoji as emoji, reactions.ucode, reactions.created_at as created_at 
         FROM reactions WHERE created_at BETWEEN ? AND ? ) sub1 
-        GROUP BY DAY(created_at), emoji ;
+        GROUP BY DAY(created_at), ucode ;
 
     `;
 

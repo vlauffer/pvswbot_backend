@@ -6,15 +6,15 @@ class ReactionManager{
     static insertReaction(reaction){
 
         var query = `
-            INSERT IGNORE INTO reactions(channel_id, message_id, user_id, emoji, created_at)
-            VALUES (?, ?, ?, ?, ?);
+            INSERT IGNORE INTO reactions(channel_id, message_id, user_id, emoji, ucode, created_at)
+            VALUES (?, ?, ?, ?, ?, ?);
         `;
 
         console.log("inserting reaction: " + reaction.content)
 
         return new Promise((resolve, reject)=>{
             pool.query(query, [
-                reaction.channel_id, reaction.message_id, reaction.user_id, reaction.content, reaction.created_at 
+                reaction.channel_id, reaction.message_id, reaction.user_id, reaction.content, reaction.ucode, reaction.created_at 
             ]).then(()=>{
                 resolve(true);
             }).catch(err=>{

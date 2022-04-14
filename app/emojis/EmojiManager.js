@@ -33,8 +33,16 @@ class EmojiManager{
     }
 
     static getMessageAndReactionEmojis(){
-        var query = format("SELECT emoji, CAST(COUNT(emoji) AS VARCHAR(64)) AS count FROM (SELECT emoji FROM emojis UNION ALL SELECT emoji from reactions) as sub GROUP BY emoji;")
-        console.log(query)
+
+        // var query = `SELECT sub.emoji, CAST(COUNT(sub.emoji) AS VARCHAR(64)) AS count, emoji_images.base          
+        // FROM (SELECT emoji FROM emojis UNION ALL SELECT emoji from reactions) as sub LEFT JOIN emoji_images 
+        // ON sub.emoji=emoji_images.emoji GROUP BY sub.emoji;`;
+        var query = `SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.emoji) AS VARCHAR(64)) AS count, LEFT(emoji_images.base, LENGTH(emoji_images.base ) -1)
+            FROM (SELECT emoji, ucode FROM emojis UNION ALL SELECT emoji, ucode from reactions) as sub LEFT JOIN emoji_images
+            ON sub.ucode=emoji_images.ucode GROUP BY sub.emoji;`;
+        // var query = format(`SELECT emoji, CAST(COUNT(emoji) AS VARCHAR(64)) AS count, emoji_images.base 
+        // FROM (SELECT emoji FROM emojis UNION ALL SELECT emoji from reactions) as sub GROUP BY emoji;`);
+        console.log(query);
 
         return new Promise((resolve, reject)=>{
 
@@ -97,11 +105,14 @@ class EmojiManager{
         //     GROUP BY discord_users.username, emojis.emoji
         // ;`;
 
-        var query = `SELECT sub.uid, discord_users.username, sub.emoji, CAST(COUNT(sub.emoji) AS VARCHAR(64)) AS count 
-        FROM (SELECT emojis.emoji AS emoji, messages.user_id AS uid, messages.message_id AS mid FROM emojis
+        var query = `SELECT sub.uid, discord_users.username, sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, 
+        LEFT(emoji_images.base, LENGTH(emoji_images.base ) -1) 
+        FROM (SELECT emojis.emoji AS emoji, emojis.ucode, messages.user_id AS uid, messages.message_id AS mid FROM emojis
             INNER JOIN messages ON emojis.message_id=messages.message_id UNION ALL 
-            SELECT reactions.emoji as emoji, reactions.user_id as uid, reactions.message_id as mid FROM reactions) as sub 
-            LEFT JOIN discord_users ON sub.uid=discord_users.user_id GROUP BY uid, emoji;`
+            SELECT reactions.emoji as emoji, reactions.ucode, reactions.user_id as uid, reactions.message_id as mid FROM reactions) as sub 
+            LEFT JOIN discord_users ON sub.uid=discord_users.user_id 
+            LEFT JOIN emoji_images ON sub.ucode=emoji_images.ucode
+            GROUP BY uid, sub.ucode;`
 
         // var query = `SELECT emoji, CAST(COUNT(emoji) AS VARCHAR(64)) AS count, discord_users.username, discord_users.user_id FROM 
         //     (SELECT emojis.emoji AS emoji, messages.user_id AS uid, messages.message_id AS mid 

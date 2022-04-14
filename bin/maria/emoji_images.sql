@@ -1,5 +1,5 @@
 CREATE TABLE emoji_images (
-    code VARCHAR(64),
+    ucode TEXT,
     emoji VARCHAR(64),
     category VARCHAR(64),
     base TEXT

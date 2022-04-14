@@ -38,7 +38,7 @@ class MessageManager{
             RETURNING message_id;
         `, messages);
 
-        console.log(query)
+        console.log(query);
 
         return new Promise((resolve, reject)=>{
 

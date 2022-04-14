@@ -8,6 +8,8 @@ const pool = require('../../MARIAdatabasePool');
 const format = require('pg-format');
 const router = new Router();
 
+const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
+
 router.post('/add', (req, res)=> {
     parseAndInsertMessages(req.body.messages).then(()=>{
         // console.log("Successful insertion");
@@ -88,9 +90,19 @@ function parseAndInsertMessages(messages){
         return Promise.resolve(true);
     }
 
+    if(emojiArray.length==1) {
+        var unicode1 = emojiArray[0][1].codePointAt(0).toString(16);
+        var unicode2 = "☠".codePointAt(0).toString(16);
+        var uni3 = emojiUnicode("☠");
+        // var unicode3 = "☠".codePointAt(0).toString(16);
+
+        
+        console.log(unicode2);
+    }
+
     var emojiQuery = format(`
-    INSERT INTO emojis(message_id, emoji) SELECT message_id, emoji FROM 
-        (SELECT message_id, emoji FROM emojis WHERE internal_emojis_id='0' 
+    INSERT INTO emojis(message_id, emoji, ucode) SELECT message_id, emoji, ucode FROM 
+        (SELECT message_id, emoji, ucode FROM emojis WHERE internal_emojis_id='0' 
         UNION ALL VALUES %L ) sub1 
         WHERE message_id NOT IN (SELECT message_id FROM messages);
      `, emojiArray);
@@ -146,9 +158,10 @@ function deleteReactions(message_id){
 function deleteMessage(message_id){
     var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message_id);
     var removeEmojisQuery = format(`DELETE FROM emojis WHERE message_id=%L; `, message_id);
+    var removeReactionsQuery = format(`DELETE FROM reactions WHERE message_id=%L; `, message_id);
     
     
-    var finalQuery = `BEGIN; ` + removeMessageQuery + removeEmojisQuery+  ` COMMIT;`
+    var finalQuery = `BEGIN; ` + removeMessageQuery + removeEmojisQuery+ removeReactionsQuery + ` COMMIT;`
 
     console.log(finalQuery)
 
@@ -191,22 +204,30 @@ function populateEmojiArray(messages){
         var emojis = splitter.splitGraphemes(message.content);
                         
         //if character is emoji, then add it to the emojiArray
+
+        //TODO: need to fix emoji test in reactions
         if (emojis!=null ){
             emojis.forEach(emoji => {
-                if(/\p{Extended_Pictographic}/u.test(emoji)){
+                if(/\p{Extended_Pictographic}/u.test(emoji) || /\p{Emoji}/u.test(emoji)){
                     emojiArray.push(
-                        [
+                        [   
                             message.message_id,
-                            emoji
+                            emoji,
+                            emojiToUnicodeConverter.emojiToUnicode(emoji)
+
                         ]
                     )
                 }
+
+                
             });
         }
     });
 
     return emojiArray;
 }
+
+
 
 function populateUserArray(messages){
     var userMap = new Map();
