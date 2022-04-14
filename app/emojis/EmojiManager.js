@@ -39,7 +39,7 @@ class EmojiManager{
         // ON sub.emoji=emoji_images.emoji GROUP BY sub.emoji;`;
         var query = `SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.emoji) AS VARCHAR(64)) AS count, LEFT(emoji_images.base, LENGTH(emoji_images.base ) -1) AS base
             FROM (SELECT emoji, ucode FROM emojis UNION ALL SELECT emoji, ucode from reactions) as sub LEFT JOIN emoji_images
-            ON sub.ucode=emoji_images.ucode GROUP BY sub.emoji;`;
+            ON sub.ucode=emoji_images.ucode GROUP BY sub.ucode;`;
         // var query = format(`SELECT emoji, CAST(COUNT(emoji) AS VARCHAR(64)) AS count, emoji_images.base 
         // FROM (SELECT emoji FROM emojis UNION ALL SELECT emoji from reactions) as sub GROUP BY emoji;`);
         console.log(query);
