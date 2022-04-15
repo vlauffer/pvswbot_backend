@@ -90,16 +90,6 @@ function parseAndInsertMessages(messages){
         return Promise.resolve(true);
     }
 
-    if(emojiArray.length==1) {
-        var unicode1 = emojiArray[0][1].codePointAt(0).toString(16);
-        var unicode2 = "☠".codePointAt(0).toString(16);
-        var uni3 = emojiUnicode("☠");
-        // var unicode3 = "☠".codePointAt(0).toString(16);
-
-        
-        console.log(unicode2);
-    }
-
     var emojiQuery = format(`
     INSERT INTO emojis(message_id, emoji, ucode) SELECT message_id, emoji, ucode FROM 
         (SELECT message_id, emoji, ucode FROM emojis WHERE internal_emojis_id='0' 
