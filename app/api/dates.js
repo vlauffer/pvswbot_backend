@@ -7,6 +7,9 @@ const splitter = new Graphemer();
 const pool = require('../../MARIAdatabasePool');
 const format = require('pg-format');
 
+const NodeCache = require( "node-cache" );
+const myCache = new NodeCache( { stdTTL: 10} );
+
 
 
 const router = new Router();
@@ -17,6 +20,16 @@ router.get('/',(req,res)=>{
         res.send("Invalid request: no params found");
         return;
     }
+
+    var emojiTotals = myCache.get('emojiTotals:'+req.query.date1+"-"+req.query.date1);
+
+    if (emojiTotals!=null){
+        res.send({
+            dates: emojiTotals
+        });
+        return;
+    }
+
     var date1 = req.query.date1;
     var date2 = req.query.date2;
 
@@ -37,6 +50,7 @@ router.get('/',(req,res)=>{
 
 
     pool.query(finalQuery, [date1, date2, date1, date2]).then((rows)=>{
+        myCache.set('emojiTotals:'+req.query.date1+"-"+req.query.date1, rows ,10 );
         res.send({
             dates: rows
         });

@@ -90,6 +90,7 @@ function parseAndInsertMessages(messages){
         return Promise.resolve(true);
     }
 
+    
     var emojiQuery = format(`
     INSERT INTO emojis(message_id, emoji, ucode) SELECT message_id, emoji, ucode FROM 
         (SELECT message_id, emoji, ucode FROM emojis WHERE internal_emojis_id='0' 
