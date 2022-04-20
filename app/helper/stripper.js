@@ -1,6 +1,7 @@
 const Graphemer = require('graphemer').default;
 const splitter = new Graphemer();
 
+//strips away potential whitespace (sometimes postman requests contain extra spaces)
 var strip = (string) =>{
     var emojiArray = []
     var emojis = splitter.splitGraphemes(string);

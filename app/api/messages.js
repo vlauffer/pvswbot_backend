@@ -1,7 +1,5 @@
 const {Router} = require('express');
-const MessageManager = require('../messages/MessageManager');
-const UserManager = require('../discord_users/UserManager');
-const EmojiManager = require('../emojis/EmojiManager');
+
 const Graphemer = require('graphemer').default;
 const splitter = new Graphemer();
 const pool = require('../../MARIAdatabasePool');
@@ -10,29 +8,30 @@ const router = new Router();
 
 const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
 
+//add messages to the db 
 router.post('/add', (req, res)=> {
+
+    if (req.body.messages==null){
+        res.send("Invalid request: messages param not found");
+        return;
+    }
+
     parseAndInsertMessages(req.body.messages).then(()=>{
-        // console.log("Successful insertion");
         res.send("Successful insertion");
     }).catch(err=>{
         console.error(err)
         res.send(err)
     });
 
-    // pool.query(finalQuery).then(()=>{
-    //     console.log("Successful insertion");
-    //     res.send("Successful insertion");
-    // }).catch(err=>{
-    //     console.error(err)
-    //     res.send(err)
-    // });
-
-
-
-    
 });
 
+//edits a given message 
 router.post('/edit', (req, res)=> {
+
+    if (req.body.message==null){
+        res.send("Invalid request: messages param not found");
+        return;
+    }
 
     var message = req.body.message;
     deleteMessage(message.message_id)
@@ -52,19 +51,17 @@ router.post('/edit', (req, res)=> {
 
 });
 
-router.post('/delete', (req, res)=> {
 
-    var message = req.body.message;
-    deleteMessage(message)
+//deletes message with a given id
+router.post('/delete', (req, res)=> {
+    if (req.body.message_id==null){
+        res.send("Invalid request: messages param not found");
+        return;
+    }
+    var message_id = req.body.message_id;
+    deleteMessage(message_id)
     .then(()=>{
-        deleteReactions(message).then(()=>{
-            res.send("deletion of " + req.body.message+ " successful");
-        })
-        .catch(err=>{
-            console.error(err);
-            res.send(err);
-        });
-        
+        res.send("deletion of " + message_id+ " successful");
     })
     .catch(err=>{
         console.error(err);
@@ -74,6 +71,7 @@ router.post('/delete', (req, res)=> {
 });
 
 
+//extracts emojis from each message, then inserts the messages, emojis, and users
 function parseAndInsertMessages(messages){
 
     // if there are no messages in the request, send "no messages" and return empty
@@ -111,31 +109,21 @@ function parseAndInsertMessages(messages){
 
     console.log(finalQuery)
 
-
     return new Promise((resolve, reject)=>{
-
-
         pool.query(finalQuery).then(rows=>{
-            
             resolve(true);
-            // conn.end();
-
-
         }).catch(err=> {
             return reject(err)
         });
-
-        
     });
-
-
 }
 
+
+//deletes all reactions for a given message_id
 function deleteReactions(message_id){
     var removeReactionsQuery = format(`DELETE FROM reactions WHERE message_id=%L; `, message_id);
     return new Promise((resolve, reject)=>{
         pool.query(removeReactionsQuery).then(()=>{
-            // parse
             resolve(true)
         })
         .catch(err=>{
@@ -146,19 +134,17 @@ function deleteReactions(message_id){
 
 }
 
+//deletes all messages, emojis, and reactions for a given message_id
 function deleteMessage(message_id){
     var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message_id);
     var removeEmojisQuery = format(`DELETE FROM emojis WHERE message_id=%L; `, message_id);
     var removeReactionsQuery = format(`DELETE FROM reactions WHERE message_id=%L; `, message_id);
-    
-    
     var finalQuery = `BEGIN; ` + removeMessageQuery + removeEmojisQuery+ removeReactionsQuery + ` COMMIT;`
 
     console.log(finalQuery)
 
     return new Promise((resolve, reject)=>{
         pool.query(finalQuery).then(()=>{
-            // parse
             resolve(true)
         })
         .catch(err=>{
@@ -187,6 +173,7 @@ function populateMessageArray(messages){
     return arrayPlaceholder;
 }
 
+// takes an array of messages and extracts all emojis
 function populateEmojiArray(messages){
     var emojiArray =[];
     messages.forEach(message => {
@@ -195,8 +182,6 @@ function populateEmojiArray(messages){
         var emojis = splitter.splitGraphemes(message.content);
                         
         //if character is emoji, then add it to the emojiArray
-
-        //TODO: need to fix emoji test in reactions
         if (emojis!=null ){
             emojis.forEach(emoji => {
                 if(/\p{Extended_Pictographic}/u.test(emoji) || /\p{Emoji}/u.test(emoji)){
@@ -219,7 +204,7 @@ function populateEmojiArray(messages){
 }
 
 
-
+//creates array of unique users (DEPRECIATED)
 function populateUserArray(messages){
     var userMap = new Map();
     var userArray=[];

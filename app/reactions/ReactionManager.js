@@ -3,6 +3,8 @@ const format = require('pg-format');
 
 
 class ReactionManager{
+
+    //insert a reaction into the db
     static insertReaction(reaction){
 
         var query = `
@@ -25,12 +27,9 @@ class ReactionManager{
         
     }
 
+    //delete a reaction
     static removeReaction(reaction){
         
-        // var query = `
-        //     INSERT IGNORE INTO reactions(channel_id, message_id, user_id, emoji, created_at)
-        //     VALUES (?, ?, ?, ?, ?);
-        // `;
 
         var query = `
             DELETE FROM reactions WHERE message_id=? AND user_id=? AND emoji=?;
@@ -49,9 +48,7 @@ class ReactionManager{
                 return reject(err)
             });
         });
-    }
-
-    
+    }    
 }
 
 module.exports = ReactionManager;

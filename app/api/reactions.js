@@ -5,7 +5,7 @@ const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
 const router = new Router();
 
 
-// gets total count of each emoji and returns json
+// adds a reaction to the db
 router.post('/add',(req,res)=>{
 
     var emoji = stripper.strip(req.body.reaction.content);
@@ -18,7 +18,6 @@ router.post('/add',(req,res)=>{
         created_at: req.body.reaction.created_at 
     }
 
-
     ReactionManager.insertReaction(reactionData)
         .then(()=>{
             res.send('reaction insertion complete')
@@ -29,11 +28,13 @@ router.post('/add',(req,res)=>{
 
 });
 
+
+//removes a reaction
 router.post('/remove',(req,res)=>{
 
     ReactionManager.removeReaction(req.body.reaction)
         .then(()=>{
-            res.send('reaction insertion complete')
+            res.send('reaction deletion complete')
         })
         .catch(err=>{
             console.error(err)

@@ -1,28 +1,24 @@
 const {Router} = require('express');
-const MessageManager = require('../messages/MessageManager');
-const UserManager = require('../discord_users/UserManager');
-const EmojiManager = require('../emojis/EmojiManager');
-const Graphemer = require('graphemer').default;
-const splitter = new Graphemer();
 const pool = require('../../MARIAdatabasePool');
-const format = require('pg-format');
-
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache( { stdTTL: 10} );
-
-
-
 const router = new Router();
 
-router.get('/',(req,res)=>{
 
-    if (Object.keys(req.query).length===0){
-        res.send("Invalid request: no params found");
+/*uses the date1 and date2 parameters from the query in order to fetch all emoji totals between
+the given dates
+*/
+router.get('/',(req,res)=>{
+    
+
+    //check that date1 and date2 parameters are in query
+    if (Object.keys(req.query).length===0 || req.query.date1==null||req.query.date2==null){
+        res.send("Invalid request: date params not found");
         return;
     }
 
+    //check to see if emojiTotals is already cached. If so, send cached emojiTotals
     var emojiTotals = myCache.get('emojiTotals:'+req.query.date1+"-"+req.query.date1);
-
     if (emojiTotals!=null){
         res.send({
             dates: emojiTotals
@@ -32,8 +28,6 @@ router.get('/',(req,res)=>{
 
     var date1 = req.query.date1;
     var date2 = req.query.date2;
-
-
 
     var finalQuery =`
     SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, created_at, 
@@ -48,7 +42,6 @@ router.get('/',(req,res)=>{
 
     `;
 
-
     pool.query(finalQuery, [date1, date2, date1, date2]).then((rows)=>{
         myCache.set('emojiTotals:'+req.query.date1+"-"+req.query.date1, rows ,10 );
         res.send({
@@ -57,7 +50,6 @@ router.get('/',(req,res)=>{
     }).catch(err=>{
         console.error(err);
     })
-    // console.log(finalQuery)
     
 });
 

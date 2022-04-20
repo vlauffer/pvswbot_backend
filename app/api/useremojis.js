@@ -1,11 +1,7 @@
 const {Router} = require('express');
-const MessageManager = require('../messages/MessageManager');
-const UserManager = require('../discord_users/UserManager');
 const EmojiManager = require('../emojis/EmojiManager');
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache( { stdTTL: 10} );
-
-
 const router = new Router();
 
 

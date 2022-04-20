@@ -11,28 +11,18 @@ class UserManager{
     static insertUsers(users){
 
         if(users.length<1)  return Promise.resolve(true);
-        var query = format("INSERT INTO discord_users (user_id, username) VALUES %L ON DUPLICATE KEY UPDATE user_id=user_id;", users)
-        console.log(query)
+        var query = format("INSERT INTO discord_users (user_id, username) VALUES %L ON DUPLICATE KEY UPDATE user_id=user_id;", users);
+        console.log(query);
         return new Promise((resolve, reject)=>{
 
 
             pool.query(query).then(rows=>{
-                resolve(true)
-                // conn.end();
+                resolve(true);
 
             }).catch(err=> {
-                return reject(err)
+                return reject(err);
             });
 
-
-            // pool.query(
-            //     query,
-            //     (error,response)=>{
-            //         if (error) return reject(error);
-            //         resolve(true)
-
-            //     }
-            // )
         });
         
     }
