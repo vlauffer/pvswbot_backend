@@ -15,7 +15,7 @@ const { response } = require('express');
  *      }, ...
  *  ]
  * }
-    */
+*/
 function getMessageAndReactionEmojis(){
 
     var query = `SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, LEFT(emoji_images.base, LENGTH(emoji_images.base )) AS base
@@ -34,8 +34,6 @@ function getMessageAndReactionEmojis(){
 
     });
 }
-
-
 
 /**
  * queries db for an array that lists the reccurance of a given emoji for each user in the db correlated with each emoji image
@@ -76,8 +74,6 @@ function getAllUsersEmojis(){
 
     });
 }
-
-
 
 module.exports = {getMessageAndReactionEmojis,
     getAllUsersEmojis};
