@@ -2,12 +2,24 @@ const {Router} = require('express');
 const pool = require('../../MARIAdatabasePool');
 const stripper = require('../helper/stripper');
 const format = require('pg-format');
-const categoryNames = ["Apple", "Google", "FB", "Wind", "Twitter", "Joy", "Sams"];
 const router = new Router();
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache( { stdTTL: 86400} );
 
-//gets all entries from emoji_images table
+/**
+ *  gets all entries from emoji_images table
+ *  @return  {
+ *      emoji_images: 
+ *          [ 
+ *              { 
+ *                  emoji: string, 
+ *                  ucode: string, 
+ *                  base: string 
+ *              }, ... 
+ *          ] 
+ * }
+*/
+
 router.get('/',(req,res)=>{
 
     //check cache for emoji images
@@ -36,7 +48,23 @@ router.get('/',(req,res)=>{
     
 });
 
-//get a list of selected emoji images
+
+/**
+ *  get a list of selected emoji images from the emoji_images table
+ *  @param {
+ *      emoji_list: '[string, ...]'
+ *  } req.query.emoji_list
+ *  @return  {
+ *      emoji_images: 
+ *          [ 
+ *              { 
+ *                  emoji: string, 
+ *                  ucode: string, 
+ *                  base: string 
+ *              }, ... 
+ *           ] 
+ * }
+*/
 //TODO: uncached atm
 router.get('/get_batch',(req,res)=>{
 

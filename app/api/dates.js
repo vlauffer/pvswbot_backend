@@ -5,14 +5,29 @@ const myCache = new NodeCache( { stdTTL: 10} );
 const router = new Router();
 
 
-/*uses the date1 and date2 parameters from the query in order to fetch all emoji totals between
+/**
+ *  uses the date1 and date2 parameters from the query in order to fetch all emoji totals between
 the given dates
+ *  @param {string} req.query.date1, the first date 
+ *  @param {string} req.query.date1, the second date
+ *  @return  {
+ *      dates: 
+ *          [ 
+ *              { 
+ *                  emoji: string, 
+ *                  ucode: string, 
+ *                  count: int, 
+ *                  created_at: string  
+ *              }, ... 
+ *          ] 
+ * }
 */
+
 router.get('/',(req,res)=>{
     
 
     //check that date1 and date2 parameters are in query
-    if (Object.keys(req.query).length===0 || req.query.date1==null||req.query.date2==null){
+    if (req.query.date1==null||req.query.date2==null){
         res.send("Invalid request: date params not found");
         return;
     }

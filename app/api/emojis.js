@@ -1,17 +1,28 @@
 const {Router} = require('express');
-const EmojiManager = require('../emojis/EmojiManager');
+const emojiManager = require('../emojis/emojiManager');
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache( { stdTTL: 10} );
 const router = new Router();
-const baseShortener = require('../helper/baseShortener'); 
 
-// gets overall totals of each emoji and their images
+/**
+ * gets overall totals of each emoji and their images
+ * @returns {Total: 
+ *      [
+ *          {
+ *              emoji: string, 
+ *              ucode: string, 
+ *              count: int, 
+ *              base: string
+ *          }, ...
+ *      ]
+ * }
+ */
 router.get('/',(req,res)=>{
 
     var emojiTotals = myCache.get('emojiTotals');
     if (emojiTotals==null){
 
-        EmojiManager.getMessageAndReactionEmojis()
+        emojiManager.getMessageAndReactionEmojis()
         .then(({emojiCounts})=>{
             myCache.set('emojiTotals', emojiCounts,10);
             res.send({

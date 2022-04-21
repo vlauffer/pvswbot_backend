@@ -1,6 +1,5 @@
+//TODO: complete seeding function
 var fs = require('fs');
-
-
 const pool = require('../../MARIAdatabasePool');
 const sqlFolder = require('../bin/maria/')
 

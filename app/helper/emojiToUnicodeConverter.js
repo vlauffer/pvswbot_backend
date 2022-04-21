@@ -1,7 +1,10 @@
 const emojiUnicode = require("emoji-unicode");
 
-
-//converts any emoji into their unicode value, accounting for invisible escape characters
+/**
+ * converts any emoji into their unicode value, accounting for invisible escape characters
+ * @param {string} emoji 
+ * @returns {string} ucode
+ */
 var emojiToUnicode = (emoji) => {
     var ucode = emojiUnicode(emoji);
     ucode = ucode.replaceAll(" ", "_");
