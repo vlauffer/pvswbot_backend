@@ -39,8 +39,8 @@ function parseAndInsertMessages(messages){
 
     //insert a given emoji into the emojis table if the message_id does not already exist in the messages table
     var emojiQuery = format(`
-    INSERT INTO emojis(message_id, emoji, ucode) SELECT message_id, emoji, ucode FROM 
-        (SELECT message_id, emoji, ucode FROM emojis WHERE internal_emojis_id='0' 
+    INSERT INTO message_emojis(message_id, emoji, ucode) SELECT message_id, emoji, ucode FROM 
+        (SELECT message_id, emoji, ucode FROM message_emojis WHERE internal_emojis_id='0' 
         UNION ALL VALUES %L ) sub1 
         WHERE message_id NOT IN (SELECT message_id FROM messages);
      `, emojiArray);
@@ -75,7 +75,7 @@ function parseAndInsertMessages(messages){
  */
  function deleteMessage(message_id){
     var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message_id);
-    var removeEmojisQuery = format(`DELETE FROM emojis WHERE message_id=%L; `, message_id);
+    var removeEmojisQuery = format(`DELETE FROM message_emojis WHERE message_id=%L; `, message_id);
     var removeReactionsQuery = format(`DELETE FROM reactions WHERE message_id=%L; `, message_id);
     var finalQuery = `BEGIN; ` + removeMessageQuery + removeEmojisQuery+ removeReactionsQuery + ` COMMIT;`
 

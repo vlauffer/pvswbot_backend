@@ -14,6 +14,6 @@ mysql -h pvswbotdb-instance.ce6gmhlvdbti.us-east-1.rds.amazonaws.com -u admin -p
 mysql -h pvswbotdb-instance.ce6gmhlvdbti.us-east-1.rds.amazonaws.com -u admin -p$pass -e "CREATE DATABASE $MAINDB CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"
 mysql -h pvswbotdb-instance.ce6gmhlvdbti.us-east-1.rds.amazonaws.com -u admin -p$pass pvswbotdb < ./bin/maria/discord_users.sql
 mysql -h pvswbotdb-instance.ce6gmhlvdbti.us-east-1.rds.amazonaws.com -u admin -p$pass pvswbotdb < ./bin/maria/messages.sql
-mysql -h pvswbotdb-instance.ce6gmhlvdbti.us-east-1.rds.amazonaws.com -u admin -p$pass pvswbotdb < ./bin/maria/emojis.sql
+mysql -h pvswbotdb-instance.ce6gmhlvdbti.us-east-1.rds.amazonaws.com -u admin -p$pass pvswbotdb < ./bin/maria/message_emojis.sql
 
 echo "pvswbotdb Configured"

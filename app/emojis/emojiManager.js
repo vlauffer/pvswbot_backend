@@ -19,7 +19,7 @@ const { response } = require('express');
 function getMessageAndReactionEmojis(){
 
     var query = `SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, LEFT(emoji_images.base, LENGTH(emoji_images.base )) AS base
-        FROM (SELECT emoji, ucode FROM emojis UNION ALL SELECT emoji, ucode from reactions) as sub LEFT JOIN emoji_images
+        FROM (SELECT emoji, ucode FROM message_emojis UNION ALL SELECT emoji, ucode from reactions) as sub LEFT JOIN emoji_images
         ON sub.ucode=emoji_images.ucode GROUP BY sub.ucode;`;
 
     return new Promise((resolve, reject)=>{
@@ -53,8 +53,8 @@ function getAllUsersEmojis(){
 
     var query = `SELECT sub.uid, discord_users.username, sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, 
     LEFT(emoji_images.base, LENGTH(emoji_images.base )) AS base
-    FROM (SELECT emojis.emoji AS emoji, emojis.ucode, messages.user_id AS uid, messages.message_id AS mid FROM emojis
-        INNER JOIN messages ON emojis.message_id=messages.message_id UNION ALL 
+    FROM (SELECT message_emojis.emoji AS emoji, message_emojis.ucode, messages.user_id AS uid, messages.message_id AS mid FROM message_emojis
+        INNER JOIN messages ON message_emojis.message_id=messages.message_id UNION ALL 
         SELECT reactions.emoji as emoji, reactions.ucode, reactions.user_id as uid, reactions.message_id as mid FROM reactions) as sub 
         LEFT JOIN discord_users ON sub.uid=discord_users.user_id 
         LEFT JOIN emoji_images ON sub.ucode=emoji_images.ucode

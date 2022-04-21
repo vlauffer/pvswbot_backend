@@ -13,7 +13,7 @@ mysql -uadmin -p$pass -e "DROP DATABASE IF EXISTS pvswbotdb;"
 mysql -uadmin -p$pass -e "CREATE DATABASE $MAINDB CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/discord_users.sql
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/messages.sql
-mysql -uadmin -p$pass pvswbotdb < ./bin/maria/emojis.sql
+mysql -uadmin -p$pass pvswbotdb < ./bin/maria/message_emojis.sql
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/reactions.sql
 
 
