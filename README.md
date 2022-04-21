@@ -45,7 +45,7 @@ Response:
 } 
 ```
 
-### /getdates
+### /getemojidates
 
 Get emoji totals between 2 dates. Takes parameters `date1 (TIMESTAMP)` and  `date2 (TIMESTAMP)`.
 
