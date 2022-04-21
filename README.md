@@ -6,28 +6,64 @@ This backend serves as an intermediary between the pvswbot and a Tidbyt. The bot
 ## This backend has 3 primary endpoints
 
 ### /getemojis 
+
 Get the total count of each emoji in the database. (takes no parameters)
 
-### /getallusersemojis
-Get the counts of every emoji used by each user in the database. (takes no parameters)
-
-### / insertmessages
-Inserts messages into the database, requires a raw json object in the following format:
-
+Response:
 ```
 {
-    "username": string,
-    "user_id": string,
-    "channel_id": string,
-    "message_id": string,
-    "content": string,
-}   
+    Total: 
+        [
+            {
+                emoji: string, 
+                ucode: string, 
+                count: int, 
+                base: string
+            }, ...
+        ]
+}
+``` 
+
+### /getallusersemojis
+
+Get the counts of every emoji used by each user in the database. (takes no parameters)
+
+Response:
+```
+{
+    Totals: 
+        [
+            { 
+                uid: string,
+                username: string,
+                base: string,
+                count: int,
+                emoji: string,
+                ucode: string
+            }, ...
+        ]
+} 
 ```
 
-## What am I currently working on?
-- Creating an additional table in the database that stores base64 encoded emojis and their corresponding title
-- Adding a column on the messages table that will label when each message was sent
-- Create table and api request for adding reactions
-- Adding functionality for editing messages and updating all tables based off edits/deletions
-- Adding functionality for discarding reactions
+### /getdates
+
+Get emoji totals between 2 dates. Takes parameters `date1 (TIMESTAMP)` and  `date2 (TIMESTAMP)`.
+
+Response:
+```
+{
+    dates: 
+        [ 
+            { 
+                emoji: string, 
+                ucode: string, 
+                count: int, 
+                created_at: string  
+            }, ... 
+        ] 
+}
+```
+
+
+
 
