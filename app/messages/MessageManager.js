@@ -6,15 +6,18 @@ const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
 
 /**
  * extracts emojis from each message, then inserts the messages, emojis, and users
- * @param  {[
- * {
- *      channel_id: string, 
- *      content: string,
- *      created_at: string,
- *      message_id: string,
- *      user_id: string, 
- *      username: string
- * }, ...]} messages
+ * @param  {
+ *      [
+ *          {
+ *              channel_id: string, 
+ *              content: string,
+ *              created_at: string,
+ *              message_id: string,
+ *              user_id: string, 
+ *              username: string
+ *          }, ...
+ *      ]
+ * } messages
  */
 function parseAndInsertMessages(messages){
 
@@ -91,22 +94,29 @@ function parseAndInsertMessages(messages){
 /**
  * for each message, populate an array of user_id, channel_id, message_id, and message content, and append this array to the arrayPlaceholder.
  * returns fully populated array of messages. 
- * @param  {[
- * {
- *      channel_id: string, 
- *      content: string,
- *      created_at: string,
- *      message_id: string,
- *      user_id: string, 
- *      username: string
- * }, ...]} messages
- * @return {[[ 
- *      string (user_id),
- *      string (channel_id),
- *      string (message_id),
- *      string (content),
- *      string (created_id)
- *   ], ... ]} arrayPlaceholder
+ * @param  {
+ *      [
+ *          {
+ *              channel_id: string, 
+ *              content: string,
+ *              created_at: string,
+ *              message_id: string,
+ *              user_id: string, 
+ *              username: string
+ *          }, ...
+ *      ]
+ * } messages
+ * @return {
+ *      [
+ *          [
+ *              string (user_id),
+ *              string (channel_id),
+ *              string (message_id),
+ *              string (content),
+ *              string (created_id)
+ *          ], ... 
+ *      ]
+ * } arrayPlaceholder
  */
  function populateMessageArray(messages){
     var arrayPlaceholder =[];
@@ -127,21 +137,28 @@ function parseAndInsertMessages(messages){
 
 /**
  *  takes an array of messages and extracts all emojis into a new array
- * @param  {[
- *  {
- *      channel_id: string, 
- *      content: string,
- *      created_at: string,
- *      message_id: string,
- *      user_id: string, 
- *      username: string
- *  }, ...]} messages
+ * @param  {
+ *      [
+ *          {
+ *              channel_id: string, 
+ *              content: string,
+ *              created_at: string,
+ *              message_id: string,
+ *              user_id: string, 
+ *              username: string
+ *          }, ...
+ *      ]
+ * } messages
  * 
- * @return {[[
- *      string (message_id),
- *      string (emoji),
- *      string (ucode)
- *  ],...]} emojiArray
+ * @return {
+ *      [
+ *          [
+ *              string (message_id),
+ *              string (emoji),
+ *              string (ucode)
+ *          ], ...
+ *      ]
+ * } emojiArray
  */
  function populateEmojiArray(messages){
     var emojiArray =[];
@@ -174,20 +191,26 @@ function parseAndInsertMessages(messages){
 
 /**
  * creates array of unique users 
- * @param  {[
- *  {
- *      channel_id: string, 
- *      content: string,
- *      created_at: string,
- *      message_id: string,
- *      user_id: string, 
- *      username: string
- *  }, ...]} messages
- * @returns {[
- * [
- *      string (user_id),
- *      string (username) 
- * ], ...]}
+ * @param  {
+ *      [
+ *          {
+ *              channel_id: string, 
+ *              content: string,
+ *              created_at: string,
+ *              message_id: string,
+ *              user_id: string, 
+ *              username: string
+ *          }, ...
+ *      ]
+ * } messages
+ * @returns {
+ *      [
+ *          [
+ *              string (user_id),
+ *              string (username) 
+ *          ], ...
+ *      ]
+ * }
  */
  function populateUserArray(messages){
     var userMap = new Map();

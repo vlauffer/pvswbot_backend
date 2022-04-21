@@ -3,7 +3,6 @@ MAINDB="pvswbotdb"
 
 echo "Configuring pvswbotdb - mariadb"
 
-# brew services start adminql
 
 echo "Please enter root user MySQL password!"
 echo "Note: password will be hidden when typing"
@@ -17,14 +16,5 @@ mysql -uadmin -p$pass pvswbotdb < ./bin/maria/messages.sql
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/emojis.sql
 mysql -uadmin -p$pass pvswbotdb < ./bin/maria/reactions.sql
 
-
-# dropdb -U admin pvswbotdb
-# createdb -U admin pvswbotdb
-
-# mysql -U admin pvswbotdb < ./bin/maria/messages.sql
-# mysql -U admin pvswbotdb < ./bin/maria/discord_users.sql
-# mysql -U admin pvswbotdb < ./bin/maria/emojis.sql
-
-# brew services stop adminql
 
 echo "pvswbotdb Configured"
