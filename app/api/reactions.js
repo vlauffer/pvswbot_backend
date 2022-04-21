@@ -1,6 +1,5 @@
 const {Router} = require('express');
 const reactionManager = require('../reactions/reactionManager');
-
 const router = new Router();
 
 

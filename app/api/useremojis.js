@@ -4,8 +4,6 @@ const NodeCache = require( "node-cache" );
 const myCache = new NodeCache( { stdTTL: 10} );
 const router = new Router();
 
-
-
 /**
  * gets the total counts of each emoji per user
  * @returns {

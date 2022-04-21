@@ -1,4 +1,4 @@
-// const pool = require('../../PSQLdatabasePool.js');
+
 const pool = require('../../MARIAdatabasePool');
 const format = require('pg-format');
 const { response } = require('express');
