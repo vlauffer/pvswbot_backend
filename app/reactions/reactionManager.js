@@ -75,6 +75,64 @@ function removeReaction(reaction){
         });
     });
 }    
+/**
+ * adds multiple reactions to the reactions table
+ * @param {[
+ *      {
+ *          channel_id: string,
+ *          message_id: string,
+ *          user_id: string,
+ *          emoji: string,
+ *          ucode: string,
+ *          created_at: string
+ *      }
+ * 
+ * ]} reactions 
+ */
+function addReactions(reactions){
+    var query = format(`
+        INSERT IGNORE INTO reactions(channel_id, message_id, user_id, emoji, ucode, created_at)
+        VALUES %L;
+    `, reactions);
+    
+
+    return new Promise((resolve, reject)=>{
+        pool.query(query).then(()=>{
+            resolve(true);
+        }).catch(err=>{
+            console.error(err);
+            return reject(err)
+        });
+    });
+
+}
+
+/**
+ * deletes all reactions for a a series of messages
+ * @param  {[string, ...]} message_ids
+ */
+ function deleteReactions(message_ids){
+    
+
+    var finalQuery = format(`DELETE FROM reactions WHERE message_id IN (%L); `, message_ids);
+
+    return new Promise((resolve, reject)=>{
+        pool.query(finalQuery).then(()=>{
+            resolve(true)
+        })
+        .catch(err=>{
+            console.error(err);
+            return reject(err)
+        })
+    });
+    
+}
+
+
+
 
 module.exports = {insertReaction,
+
+    addReactions,
+    deleteReactions,
     removeReaction};

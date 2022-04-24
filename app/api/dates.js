@@ -1,7 +1,9 @@
 const {Router} = require('express');
 const pool = require('../../MARIAdatabasePool');
 const NodeCache = require( "node-cache" );
-const myCache = new NodeCache( { stdTTL: 10} );
+
+const cacheRate = require('../../globalVariables');
+const myCache = new NodeCache( { stdTTL: cacheRate} );
 const router = new Router();
 
 /**
@@ -43,20 +45,18 @@ router.get('/',(req,res)=>{
     var date2 = req.query.date2;
 
     var finalQuery =`
-    SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, created_at, 
-    LEFT(emoji_images.base, LENGTH(emoji_images.base )) AS base 
+    SELECT sub.emoji, sub.ucode, CAST(COUNT(sub.ucode) AS VARCHAR(64)) AS count, created_at  
     FROM (SELECT message_emojis.emoji, message_emojis.ucode, messages.created_at as created_at 
         FROM message_emojis INNER JOIN messages on message_emojis.message_id=messages.message_id 
         WHERE created_at BETWEEN ? AND ? UNION ALL 
         SELECT reactions.emoji, reactions.ucode, reactions.created_at as created_at 
         FROM reactions WHERE created_at BETWEEN ? AND ? ) sub 
-        LEFT JOIN emoji_images ON sub.ucode=emoji_images.ucode
         GROUP BY DAY(created_at), sub.ucode ;
 
     `;
 
     pool.query(finalQuery, [date1, date2, date1, date2]).then((rows)=>{
-        myCache.set('emojiTotals:'+req.query.date1+"-"+req.query.date1, rows ,10 );
+        myCache.set('emojiTotals:'+req.query.date1+"-"+req.query.date1, rows , cacheRate );
         res.send({
             dates: rows
         });

@@ -3,6 +3,98 @@ const splitter = new Graphemer();
 const pool = require('../../MARIAdatabasePool');
 const format = require('pg-format');
 const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
+const superParser = require('../helper/superParser');
+const reactionManager = require('../reactions/reactionManager');
+const res = require('express/lib/response');
+
+/** 
+ * controls the insertion of inbound messages: 
+ * Parse messages -> delete reactions -> add messages, message emojis, and users -> add reactions
+ * The reactions-related functions are split from the other because insertMessagesEmojisUsers()
+ * is also used to edit messages, and reactions need to be preserved during edits due to limitations
+ * of the discord bot
+ * @param  {
+ *      [
+ *          {
+ *              channel_id: string, 
+ *              content: string,
+ *              created_at: string,
+ *              message_id: string,
+ *              user_id: string, 
+ *              username: string
+ *          }, ...
+ *      ]
+ * } messages
+ */
+function insertionController(messages){
+    // if there are no messages in the request, send "no messages" and return empty
+    if (messages.length<1) {
+        return Promise.resolve(true)
+        
+    }
+
+    return new Promise((resolve, reject)=>{
+        var parsedData = superParser.superParse(messages);
+
+        reactionManager.deleteReactions(parsedData.messageIDs)
+        .then(()=>{
+            insertMessagesEmojisUsers(parsedData)
+            .then(()=>{
+                reactionManager.addReactions(parsedData.reactionsArray).then(()=>{
+                    return resolve(true);
+                })
+
+
+
+                .catch(err=>{
+                    console.error(err);
+                    return reject(err)
+                });
+            }).catch(err=>{
+                console.error(err);
+                return reject(err)
+            });
+        }).catch(err=>{
+            console.error(err);
+            return reject(err)
+        });
+    });
+
+    
+
+    
+}
+
+/**
+ * 
+ * @param {*} messages 
+ */
+function editController(messages){
+
+    if (messages.length<1) {
+        return Promise.resolve(true)
+        
+    }
+
+    return new Promise((resolve, reject)=>{
+        var parsedData = superParser.superParse([messages]);
+
+        deleteMessage(parsedData.messageIDs[0]).then(()=>{
+            insertMessagesEmojisUsers(parsedData).then(()=>{
+                resolve(true);
+            })
+            .catch(err=>{
+                console.error(err);
+                return reject(err)
+            });
+        }).catch(err=>{
+            console.error(err);
+            return reject(err)
+        });
+
+    });
+
+}
 
 /**
  * extracts emojis from each message, then inserts the messages, emojis, and users
@@ -19,23 +111,15 @@ const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
  *      ]
  * } messages
  */
-function parseAndInsertMessages(messages){
+function insertMessagesEmojisUsers(parsedData){
 
     // if there are no messages in the request, send "no messages" and return empty
-    if (messages.length<1) {
+    if (parsedData.messageArray.length<1) {
         res.send("no messages")
         return Promise.resolve(true);
     }
 
-    //next 3 lines format message, emoji, and user information into arrays that MariaDB can read.
-    var messageArray = populateMessageArray(messages);
-    var userArray = populateUserArray(messages);
-    var emojiArray = populateEmojiArray(messages);
-
-    //check to see if there are any emojis in the messages
-    if(emojiArray.length<1){
-        return Promise.resolve(true);
-    }
+    // TODO: check to see what happens when no emojis are present in users or emojis
 
     //insert a given emoji into the emojis table if the message_id does not already exist in the messages table
     var emojiQuery = format(`
@@ -43,19 +127,19 @@ function parseAndInsertMessages(messages){
         (SELECT message_id, emoji, ucode FROM message_emojis WHERE internal_emojis_id='0' 
         UNION ALL VALUES %L ) sub1 
         WHERE message_id NOT IN (SELECT message_id FROM messages);
-     `, emojiArray);
+     `, parsedData.emojiArray);
 
     //insert message into message table where message_id is unique
     var messageQuery = format(`
     INSERT IGNORE INTO messages(user_id, channel_id, message_id, message_content, created_at) VALUES %L
         RETURNING message_id;
-     `, messageArray);
+     `, parsedData.messageArray);
 
     //insert users where used_id is unique
     var userQuery = format(` 
     INSERT INTO discord_users (user_id, username) 
         VALUES %L ON DUPLICATE KEY UPDATE user_id=user_id;
-     `, userArray);
+     `, parsedData.userArray);
 
     var finalQuery = `BEGIN; `+ emojiQuery + messageQuery + userQuery + ` COMMIT;`
 
@@ -70,14 +154,13 @@ function parseAndInsertMessages(messages){
 
 
 /**
- * deletes all messages, emojis, and reactions for a given message_id
+ * deletes all messages and emojis for a given message_id
  * @param  {string} message_id
  */
  function deleteMessage(message_id){
     var removeMessageQuery = format(`DELETE FROM messages WHERE message_id=%L; `, message_id);
     var removeEmojisQuery = format(`DELETE FROM message_emojis WHERE message_id=%L; `, message_id);
-    var removeReactionsQuery = format(`DELETE FROM reactions WHERE message_id=%L; `, message_id);
-    var finalQuery = `BEGIN; ` + removeMessageQuery + removeEmojisQuery+ removeReactionsQuery + ` COMMIT;`
+    var finalQuery = `BEGIN; ` + removeMessageQuery + removeEmojisQuery + ` COMMIT;`
 
     return new Promise((resolve, reject)=>{
         pool.query(finalQuery).then(()=>{
@@ -90,6 +173,9 @@ function parseAndInsertMessages(messages){
     });
     
 }
+
+
+
 
 /**
  * for each message, populate an array of user_id, channel_id, message_id, and message content, and append this array to the arrayPlaceholder.
@@ -118,7 +204,7 @@ function parseAndInsertMessages(messages){
  *      ]
  * } arrayPlaceholder
  */
- function populateMessageArray(messages){
+function populateMessageArray(messages){
     var arrayPlaceholder =[];
     messages.forEach(message => {
         arrayPlaceholder.push(
@@ -232,7 +318,9 @@ function parseAndInsertMessages(messages){
 }
 
 
-module.exports = {parseAndInsertMessages,
+module.exports = {insertMessagesEmojisUsers,
+    insertionController,
+    editController,
     deleteMessage,
     populateMessageArray,
     populateEmojiArray,

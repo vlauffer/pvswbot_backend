@@ -4,6 +4,7 @@ const stripper = require('../helper/stripper');
 const format = require('pg-format');
 const router = new Router();
 const NodeCache = require( "node-cache" );
+
 const myCache = new NodeCache( { stdTTL: 86400} );
 
 /**
