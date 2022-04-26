@@ -71,7 +71,6 @@ function superParse(messages){
             reactionsArray.push(...reactionParse(message.reactions))
             
         }
-
     });
 
     var parsedData = {
