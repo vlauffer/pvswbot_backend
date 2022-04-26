@@ -59,11 +59,7 @@ function insertionController(messages){
             console.error(err);
             return reject(err)
         });
-    });
-
-    
-
-    
+    });   
 }
 
 /**
@@ -177,9 +173,6 @@ function insertMessagesEmojisUsers(parsedData){
     });
     
 }
-
-
-
 
 /**
  * for each message, populate an array of user_id, channel_id, message_id, and message content, and append this array to the arrayPlaceholder.
