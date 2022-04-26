@@ -22,7 +22,6 @@ const myCache = new NodeCache( { stdTTL: 86400} );
 */
 
 router.get('/',(req,res)=>{
-
     //check cache for emoji images
     var allEmojiImages = myCache.get('allEmojiImages');
     if(allEmojiImages!=null){
@@ -45,25 +44,23 @@ router.get('/',(req,res)=>{
     }).catch(err=>{
         console.error(err);
     });
-
-    
 });
 
 
 /**
  *  get a list of selected emoji images from the emoji_images table
+ * 
  *  @param {
  *      emoji_list: '[string, ...]'
  *  } req.query.emoji_list
  *  @return  {
- *      emoji_images: 
- *          [ 
- *              { 
- *                  emoji: string, 
- *                  ucode: string, 
- *                  base: string 
- *              }, ... 
- *           ] 
+ *      emoji_images:  [ 
+*             { 
+*                  emoji: string, 
+*                  ucode: string, 
+*                  base: string 
+*             }, ... 
+*        ] 
  * }
 */
 //TODO: uncached atm

@@ -1,19 +1,19 @@
 const {Router} = require('express');
 const emojiManager = require('../emojis/emojiManager');
 const NodeCache = require( "node-cache" );
-const cacheRate = require('../../globalVariables');
+const cacheRate = require('../../globalVariables').cacheRate;
 const myCache = new NodeCache( { stdTTL: cacheRate} );
 const router = new Router();
 
 /**
- * gets overall totals of each emoji and their images
- * @returns {Total: 
+ * gets overall totals of each emoji
+ * @returns {
+ *  Total: 
  *      [
  *          {
  *              emoji: string, 
  *              ucode: string, 
  *              count: int, 
- *              base: string
  *          }, ...
  *      ]
  * }

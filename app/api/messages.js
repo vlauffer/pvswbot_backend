@@ -10,7 +10,7 @@ const reactionManager = require('../reactions/reactionManager');
  *          {
  *              channel_id: string, 
  *              content: string, 
- *              reactions: [string, ...]
+ *              reactions: [reactions (add w/out ucode)]        //see structures.md
  *              created_at: string, 
  *              message_id: string, 
  *              user_id: string, 
@@ -54,8 +54,6 @@ router.post('/edit', (req, res)=> {
     if (req.body.message==null){
         res.send("Invalid request: messages param not found");
         return;
-
-        
     }
 
     messageManager.editController(req.body.message).then(()=>{
@@ -63,26 +61,7 @@ router.post('/edit', (req, res)=> {
     }).catch(err=>{
         console.error(err);
         res.send(err);
-    });;
-
-    // var message = req.body.message;
-    // var messageArray = [];
-    // messageArray.push(message);
-
-    // messageManager.deleteMessage(message.message_id)
-    // .then(()=>{
-    //     messageManager.parseAndInsertMessages(messageArray).then(()=>{
-    //         res.send("edit successful");
-    //     })
-    //     .catch(err=>{
-    //         console.error(err);
-    //         res.send(err);
-    //     });
-    // })
-    // .catch(err=>{
-    //     console.error(err);
-    //     res.send(err);
-    // });
+    });
 
 });
 

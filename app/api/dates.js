@@ -2,7 +2,7 @@ const {Router} = require('express');
 const pool = require('../../MARIAdatabasePool');
 const NodeCache = require( "node-cache" );
 
-const cacheRate = require('../../globalVariables');
+const cacheRate = require('../../globalVariables').cacheRate;
 const myCache = new NodeCache( { stdTTL: cacheRate} );
 const router = new Router();
 

@@ -18,7 +18,6 @@ Response:
                 emoji: string, 
                 ucode: string, 
                 count: int, 
-                base: string
             }, ...
         ]
 }
@@ -29,14 +28,13 @@ Response:
 Get the counts of every emoji used by each user in the database. (takes no parameters)
 
 Response:
-```
+``` 
 {
     Totals: 
         [
             { 
                 uid: string,
                 username: string,
-                base: string,
                 count: int,
                 emoji: string,
                 ucode: string
@@ -63,6 +61,25 @@ Response:
         ] 
 }
 ```
+
+### /emoji_images
+
+Get all the emoji images in the emoji_images table
+
+Response: 
+```
+{
+    emoji_images: [ 
+        { 
+            emoji: string, 
+            ucode: string, 
+            base: string 
+        }, ... 
+    ] 
+}
+```
+
+
 
 
 

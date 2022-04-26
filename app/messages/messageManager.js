@@ -21,19 +21,23 @@ const res = require('express/lib/response');
  *              created_at: string,
  *              message_id: string,
  *              user_id: string, 
- *              username: string
+ *              username: string,
+ *              reactions: [{reactionsStruct}]  //see readme
+ *              
  *          }, ...
  *      ]
  * } messages
+ * 
+ * @returns {true} if resolved, {error} if rejected
  */
 function insertionController(messages){
     // if there are no messages in the request, send "no messages" and return empty
     if (messages.length<1) {
-        return Promise.resolve(true)
-        
+        return Promise.resolve(true);
     }
 
     return new Promise((resolve, reject)=>{
+        //extract all of the necessary data in a single function
         var parsedData = superParser.superParse(messages);
 
         reactionManager.deleteReactions(parsedData.messageIDs)
@@ -43,16 +47,13 @@ function insertionController(messages){
                 reactionManager.addReactions(parsedData.reactionsArray).then(()=>{
                     return resolve(true);
                 })
-
-
-
                 .catch(err=>{
                     console.error(err);
-                    return reject(err)
+                    return reject(err);
                 });
             }).catch(err=>{
                 console.error(err);
-                return reject(err)
+                return reject(err);
             });
         }).catch(err=>{
             console.error(err);
@@ -67,7 +68,7 @@ function insertionController(messages){
 
 /**
  * 
- * @param {*} messages 
+ * @param {messages w/out reactions} messages 
  */
 function editController(messages){
 

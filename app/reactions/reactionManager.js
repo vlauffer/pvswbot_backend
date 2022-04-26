@@ -8,14 +8,7 @@ const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
 
 /**
  * insert a reaction into the db
- * @param {
- *      channel_id: string, 
- *      message_id: string,
- *      user_id: string, 
- *      emoji: string, 
- *      ucode: string, 
- *      created_at: string
- * } reaction 
+ * @param {reaction-add} reaction            //see structures.md 
  * 
  */
 function insertReaction(reaction){
@@ -77,19 +70,12 @@ function removeReaction(reaction){
 }    
 /**
  * adds multiple reactions to the reactions table
- * @param {[
- *      {
- *          channel_id: string,
- *          message_id: string,
- *          user_id: string,
- *          emoji: string,
- *          ucode: string,
- *          created_at: string
- *      }
- * 
- * ]} reactions 
+ * @param {reactions-add}           //see structures.md
  */
 function addReactions(reactions){
+
+    if(reactions.length<1) return Promise.resolve(true);
+    
     var query = format(`
         INSERT IGNORE INTO reactions(channel_id, message_id, user_id, emoji, ucode, created_at)
         VALUES %L;
@@ -108,7 +94,7 @@ function addReactions(reactions){
 }
 
 /**
- * deletes all reactions for a a series of messages
+ * deletes all reactions for a given set of message ids
  * @param  {[string, ...]} message_ids
  */
  function deleteReactions(message_ids){

@@ -4,14 +4,13 @@ const format = require('pg-format');
 const { response } = require('express');
 
 /**
- * gets the totals for the combined entries in the emojis table and the reactions table, grouped with the base image of each emoji
+ * gets the totals for the combined entries in the emojis table and the reactions table
  * @returns {
  *  [
  *      {
  *          emoji: string,  
  *          ucode: string, 
  *          count: int,
- *          base: string
  *      }, ...
  *  ]
  * }
@@ -39,7 +38,6 @@ function getMessageAndReactionEmojis(){
  * @returns {
  *  [
  *      {
- *          base: string,
  *          count: int,
  *          emoji: string,
  *          ucode: string,
@@ -63,9 +61,6 @@ function getAllUsersEmojis(){
         pool.query(query).then(rows=>{
             var emojiCounts = rows;
             resolve({emojiCounts})
-            // conn.end();
-
-
         }).catch(err=> {
             return reject(err)
         });

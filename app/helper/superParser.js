@@ -17,11 +17,16 @@ const stripper = require('../helper/stripper');
  *          }, ...
  *      ]
  * } messages
+ * 
+ * @returns {               
+ *      messageArray: [message-SQL, ... ],
+ *      emojiArray: [emoji-SQL, ...],
+ *      messageIDs: [string, ...],
+ *      reactionsArray: [reaction-SQL, ...],
+ *      userArray: [user-SQL, ...]
+ * } parsedData
  */
 
-const { parse } = require("dotenv");
-
-//TODO: superparse wont be able to parse reactions on edits
 function superParse(messages){
 
     var emojiArray = [];
@@ -78,10 +83,16 @@ function superParse(messages){
     };
 
     return parsedData;
-
-
 }
 
+
+/**
+ * extracts reactions from messages and translates them into SQL format
+ * @param {reactions} reactions 
+ * @returns {
+ *      [reaction-SQL, ...]
+ * }
+ */
 function reactionParse(reactions){
     var reactionsArray = [];
     reactions.forEach(reaction => {
@@ -101,6 +112,14 @@ function reactionParse(reactions){
     return reactionsArray;
 }
 
+/**
+ * gets all emojis from a string and translates them into emoji-SQL objects
+ * @param {string} content 
+ * @param {string} message_id 
+ * @returns {
+ *      [emoji-SQL, ...]
+ * }
+ */
 function emojiParse(content, message_id){
 
     var emojiArray = [];
