@@ -10,7 +10,7 @@ const reactionManager = require('../reactions/reactionManager');
  *          {
  *              channel_id: string, 
  *              content: string, 
- *              reactions: [reactions (add w/out ucode)]        //see structures.md
+ *              reactions: [reactions-add)]        //see structures.md
  *              created_at: string, 
  *              message_id: string, 
  *              user_id: string, 

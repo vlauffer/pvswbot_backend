@@ -5,18 +5,18 @@
 
 ```
 
- *          {
- *              channel_id: string, 
- *              content: string,
- *              created_at: string,
- *              message_id: string,
- *              user_id: string, 
- *              username: string,
- *              reactions: [reaction, ...] 
- *              
- *          }
+{
+    channel_id: string, 
+    content: string,
+    created_at: string,
+    message_id: string,
+    user_id: string, 
+    username: string,
+    reactions: [reaction, ...] 
+    
+}
 
- *
+
 ```
 
 
@@ -24,8 +24,8 @@
 
 ```
 {
- *      [message, message, ...]
- * }
+    [message, message, ...]
+}
 ```
 
 ## message-SQL
@@ -60,12 +60,12 @@
 
 ```
 {
- *      channel_id: string, 
- *      message_id: string,
- *      user_id: string, 
- *      emoji: string, 
- *      created_at: string
- * } 
+    channel_id: string, 
+    message_id: string,
+    user_id: string, 
+    emoji: string, 
+    created_at: string
+} 
 ```
 
 

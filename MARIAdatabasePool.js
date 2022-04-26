@@ -33,7 +33,6 @@ if(process.env.NODE_ENV==="production"){
     });
     pool.getConnection().then(console.log("local db connected")).catch(error=>console.error(error));
     
-    // pooly.getConnection().then().catch(err=> console.error(err));
 }
 
 module.exports = pool;

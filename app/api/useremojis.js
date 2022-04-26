@@ -12,7 +12,6 @@ const router = new Router();
  *          { 
  *              uid: string,
  *              username: string,
- *              base: string,
  *              count: int,
  *              emoji: string,
  *              ucode: string

@@ -29,10 +29,8 @@ router.post('/add',(req,res)=>{
 
 });
 
-
-
 /**
- * removes a reaction
+ * removes a reaction from the db
  * @param {
  *      user_id: string,
  *      message_id: string,

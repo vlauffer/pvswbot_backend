@@ -8,7 +8,7 @@ const reactionManager = require('../reactions/reactionManager');
 const res = require('express/lib/response');
 
 /** 
- * controls the insertion of inbound messages: 
+ * controls the insertion of inbound messages 
  * Parse messages -> delete reactions -> add messages, message emojis, and users -> add reactions
  * The reactions-related functions are split from the other because insertMessagesEmojisUsers()
  * is also used to edit messages, and reactions need to be preserved during edits due to limitations
@@ -67,14 +67,15 @@ function insertionController(messages){
 }
 
 /**
- * 
- * @param {messages w/out reactions} messages 
+ * edits a given message by deleting the message and re-inserting it. 
+ * This method is helpful because we need to reparse the new message anyway, and allows
+ * us to reuse code from the normal insertion method
+ * @param {messages w/out reactions} messages       //see structures.md
  */
 function editController(messages){
 
     if (messages.length<1) {
-        return Promise.resolve(true)
-        
+        return Promise.resolve(true)   
     }
 
     return new Promise((resolve, reject)=>{
@@ -120,29 +121,31 @@ function insertMessagesEmojisUsers(parsedData){
         return Promise.resolve(true);
     }
 
-    // TODO: check to see what happens when no emojis are present in users or emojis
-
-    //insert a given emoji into the emojis table if the message_id does not already exist in the messages table
-    var emojiQuery = format(`
+    // if there are no emojis in the set of messages, set emojiQuery to "". Otherwise,
+    // insert a given emoji into the emojis table if the message_id does not already exist in the messages table
+    var emojiQuery = parsedData.emojiArray.length < 1 ? "" : format(`
     INSERT INTO message_emojis(message_id, emoji, ucode) SELECT message_id, emoji, ucode FROM 
         (SELECT message_id, emoji, ucode FROM message_emojis WHERE internal_emojis_id='0' 
         UNION ALL VALUES %L ) sub1 
         WHERE message_id NOT IN (SELECT message_id FROM messages);
-     `, parsedData.emojiArray);
-
-    //insert message into message table where message_id is unique
-    var messageQuery = format(`
+     `, parsedData.emojiArray);;
+   
+    // if there are no messages in the set of messages, set messageQuery to "". Otherwise,
+    // insert message into message table where message_id is unique
+    var messageQuery = parsedData.messageArray.length < 1 ? "" : format(`
     INSERT IGNORE INTO messages(user_id, channel_id, message_id, message_content, created_at) VALUES %L
         RETURNING message_id;
      `, parsedData.messageArray);
 
+
+    // if there are no users in the set of messages, set userQuery to "". Otherwise,
     //insert users where used_id is unique
-    var userQuery = format(` 
+    var userQuery = parsedData.userArray.length < 1 ? "" : format(` 
     INSERT INTO discord_users (user_id, username) 
         VALUES %L ON DUPLICATE KEY UPDATE user_id=user_id;
      `, parsedData.userArray);
 
-    var finalQuery = `BEGIN; `+ emojiQuery + messageQuery + userQuery + ` COMMIT;`
+    var finalQuery = `BEGIN; `+ emojiQuery + messageQuery + userQuery + ` COMMIT;`;
 
     return new Promise((resolve, reject)=>{
         pool.query(finalQuery).then(rows=>{

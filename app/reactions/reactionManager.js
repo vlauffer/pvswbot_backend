@@ -4,8 +4,6 @@ const format = require('pg-format');
 const stripper = require('../helper/stripper');
 const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
 
-
-
 /**
  * insert a reaction into the db
  * @param {reaction-add} reaction            //see structures.md 
@@ -81,7 +79,6 @@ function addReactions(reactions){
         VALUES %L;
     `, reactions);
     
-
     return new Promise((resolve, reject)=>{
         pool.query(query).then(()=>{
             resolve(true);
