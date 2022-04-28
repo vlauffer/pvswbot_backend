@@ -143,6 +143,7 @@ function insertMessagesEmojisUsers(parsedData){
 
     var finalQuery = `BEGIN; `+ emojiQuery + messageQuery + userQuery + ` COMMIT;`;
 
+    console.log(finalQuery);
     return new Promise((resolve, reject)=>{
         pool.query(finalQuery).then(rows=>{
             resolve(true);
