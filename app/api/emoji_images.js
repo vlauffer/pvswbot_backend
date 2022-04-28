@@ -2,6 +2,7 @@ const {Router} = require('express');
 const pool = require('../../MARIAdatabasePool');
 const stripper = require('../helper/stripper');
 const format = require('pg-format');
+const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
 const router = new Router();
 const NodeCache = require( "node-cache" );
 
@@ -36,7 +37,6 @@ router.get('/',(req,res)=>{
     `;
 
     pool.query(finalQuery).then((rows)=>{
-        
         myCache.set('allEmojiImages',rows, 86400);
         res.send({
             emoji_images: rows
@@ -74,11 +74,14 @@ router.get('/get_batch',(req,res)=>{
     var emoji_list = JSON.parse(req.query.emoji_list);
     var trimmedEmojiList = [];
     emoji_list.forEach(emoji => {
-        trimmedEmojiList.push(stripper.strip(emoji))
+        //strip the emoji of white space, convert it to unicode, add it to trimmedEmojiList
+        var strippedEmoji = stripper.strip(emoji);
+        if (strippedEmoji==null) return;
+        trimmedEmojiList.push(emojiToUnicodeConverter.emojiToUnicode(strippedEmoji));
     });
     
     var finalQuery =format(`
-    SELECT ucode, emoji, LEFT(emoji_images.base, LENGTH(emoji_images.base )) as base FROM emoji_images WHERE emoji IN (%L);
+    SELECT ucode, emoji, LEFT(emoji_images.base, LENGTH(emoji_images.base )) as base FROM emoji_images WHERE ucode IN (%L);
     `, trimmedEmojiList);
 
 

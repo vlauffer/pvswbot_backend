@@ -142,7 +142,7 @@ function insertMessagesEmojisUsers(parsedData){
      `, parsedData.userArray);
 
     var finalQuery = `BEGIN; `+ emojiQuery + messageQuery + userQuery + ` COMMIT;`;
-
+    console.log(finalQuery)
     return new Promise((resolve, reject)=>{
         pool.query(finalQuery).then(rows=>{
             resolve(true);
@@ -171,155 +171,10 @@ function insertMessagesEmojisUsers(parsedData){
             return reject(err)
         })
     });
-    
 }
-
-/**
- * for each message, populate an array of user_id, channel_id, message_id, and message content, and append this array to the arrayPlaceholder.
- * returns fully populated array of messages. 
- * @param  {
- *      [
- *          {
- *              channel_id: string, 
- *              content: string,
- *              created_at: string,
- *              message_id: string,
- *              user_id: string, 
- *              username: string
- *          }, ...
- *      ]
- * } messages
- * @return {
- *      [
- *          [
- *              string (user_id),
- *              string (channel_id),
- *              string (message_id),
- *              string (content),
- *              string (created_id)
- *          ], ... 
- *      ]
- * } arrayPlaceholder
- */
-function populateMessageArray(messages){
-    var arrayPlaceholder =[];
-    messages.forEach(message => {
-        arrayPlaceholder.push(
-            [
-                message.user_id,
-                message.channel_id,
-                message.message_id,
-                message.content,
-                message.created_at
-            ]
-        );
-    });
-    return arrayPlaceholder;
-}
-
-
-/**
- *  takes an array of messages and extracts all emojis into a new array
- * @param  {
- *      [
- *          {
- *              channel_id: string, 
- *              content: string,
- *              created_at: string,
- *              message_id: string,
- *              user_id: string, 
- *              username: string
- *          }, ...
- *      ]
- * } messages
- * 
- * @return {
- *      [
- *          [
- *              string (message_id),
- *              string (emoji),
- *              string (ucode)
- *          ], ...
- *      ]
- * } emojiArray
- */
- function populateEmojiArray(messages){
-    var emojiArray =[];
-    messages.forEach(message => {
-
-        //splits message content into characters, where each character can also be an emoji (takes into account compound emojis)
-        var emojis = splitter.splitGraphemes(message.content);
-                        
-        //if character is emoji, then add it to the emojiArray
-        if (emojis!=null ){
-            emojis.forEach(emoji => {
-                if(/\p{Extended_Pictographic}/u.test(emoji) || /\p{Emoji}/u.test(emoji)){
-                    emojiArray.push(
-                        [   
-                            message.message_id,
-                            emoji,
-                            emojiToUnicodeConverter.emojiToUnicode(emoji)
-
-                        ]
-                    )
-                }
-
-                
-            });
-        }
-    });
-
-    return emojiArray;
-}
-
-/**
- * creates array of unique users 
- * @param  {
- *      [
- *          {
- *              channel_id: string, 
- *              content: string,
- *              created_at: string,
- *              message_id: string,
- *              user_id: string, 
- *              username: string
- *          }, ...
- *      ]
- * } messages
- * @returns {
- *      [
- *          [
- *              string (user_id),
- *              string (username) 
- *          ], ...
- *      ]
- * }
- */
- function populateUserArray(messages){
-    var userMap = new Map();
-    var userArray=[];
-
-    messages.forEach(message => {
-        if(!userMap.has(message.user_id)){
-            userMap.set(message.user_id, true);
-            userArray.push(
-                [
-                    message.user_id,
-                    message.username,
-                ]
-            )
-        }
-    });
-    
-    return userArray;
-}
-
 
 module.exports = {insertMessagesEmojisUsers,
     insertionController,
     editController,
-    deleteMessage,
-    populateMessageArray,
-    populateEmojiArray,
-    populateUserArray};
+    deleteMessage};
 

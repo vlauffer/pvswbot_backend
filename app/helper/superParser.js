@@ -2,6 +2,8 @@ const Graphemer = require('graphemer').default;
 const splitter = new Graphemer();
 const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
 const stripper = require('../helper/stripper');
+const  numberSetArray = require('../../globalVariables'). numberSetArray;
+const  numberSet = new Set( numberSetArray);
 
 /**
  * parses all information into sql queries
@@ -123,23 +125,26 @@ function emojiParse(content, message_id){
 
     var emojiArray = [];
     //splits message content into characters, where each character can also be an emoji (takes into account compound emojis)
-    var emojis = splitter.splitGraphemes(content);
+    var splitChars = splitter.splitGraphemes(content);
                             
     //if character is emoji, then add it to the emojiArray
-    if (emojis!=null ){
-        emojis.forEach(emoji => {
-            if(/\p{Extended_Pictographic}/u.test(emoji) || /\p{Emoji}/u.test(emoji)){
+    if (splitChars!=null ){
+        splitChars.forEach(singleChar => {
+            // if the singleChar is a non-emoji number, '#', or '*', do not add it to emojiArray 
+            if ( numberSet.has(singleChar)==true ){
+                return;
+            }
+
+            if(/\p{Extended_Pictographic}/u.test(singleChar) || /\p{Emoji}/u.test(singleChar)){
                 emojiArray.push(
                     [   
                         message_id,
-                        emoji,
-                        emojiToUnicodeConverter.emojiToUnicode(emoji)
+                        singleChar,
+                        emojiToUnicodeConverter.emojiToUnicode(singleChar)
 
                     ]
                 )
             }
-
-            
         });
     }
 

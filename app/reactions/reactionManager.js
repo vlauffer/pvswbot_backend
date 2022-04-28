@@ -10,8 +10,10 @@ const emojiToUnicodeConverter = require('../helper/emojiToUnicodeConverter');
  * 
  */
 function insertReaction(reaction){
-
+    
     var emoji = stripper.strip(reaction.content);
+    if (emoji==null) return;
+
     reaction = {
         channel_id: reaction.channel_id, 
         message_id: reaction.message_id,
